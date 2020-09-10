@@ -1,0 +1,14 @@
+# 아래는 설정 예시
+groups:
+  1:
+    group: Newbie
+    point: 10 # 포인트 0부터 10까지는 Newbie
+  2:
+    group: User
+    point: 50 # 포인트 11부터 50까지는 User
+  3:
+    group: VIP1
+    point: 100 # -
+  4:
+    group: VIP2
+    point: -1 # 101 부터 VIP2 (-1 은 제한 X)

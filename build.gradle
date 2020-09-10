@@ -18,10 +18,15 @@ repositories {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
+    maven {
+        name = 'jitpack'
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.2-R0.1-SNAPSHOT'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
 }
 
 processResources {
@@ -29,3 +34,5 @@ processResources {
         filter ReplaceTokens, tokens: [version: version]
     }
 }
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
