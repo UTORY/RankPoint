@@ -2,6 +2,7 @@ package net.teamuni.rankpoint.data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 public abstract class PlayerDataManager {
@@ -20,7 +21,7 @@ public abstract class PlayerDataManager {
 
     public PlayerData getPlayerData(UUID uuid) {
         if (!playerDataMap.containsKey(uuid)) {
-            loadPoint(uuid);
+            loadPlayerData(uuid);
         }
         return playerDataMap.get(uuid);
     }
@@ -29,16 +30,41 @@ public abstract class PlayerDataManager {
         if (!playerDataMap.containsKey(uuid)) {
             return;
         }
-        savePoint(uuid, playerDataMap.remove(uuid).getPoint());
+        PlayerData data = playerDataMap.remove(uuid);
+        if(data.isChanged) {
+            savePoint(uuid, data.getPoint());
+        }
+    }
+
+    public void saveAllData() {
+        if (playerDataMap.isEmpty()) {
+            return;
+        }
+        for (Entry<UUID, PlayerData> entry : playerDataMap.entrySet()) {
+            if (entry.getValue().isChanged) {
+                savePoint(entry.getKey(), entry.getValue().getPoint());
+            }
+        }
     }
 
     public void close() {
+        unloadAllData();
         closeDatabase();
+    }
+
+    private void unloadAllData() {
+        if (playerDataMap.isEmpty()) {
+            return;
+        }
+        for (UUID uuid : playerDataMap.keySet()) {
+            unloadPlayerData(uuid);
+        }
     }
 
     public static class PlayerData {
 
         private int point;
+        private boolean isChanged = false;
 
         private PlayerData(int point) {
             this.point = point;
@@ -54,6 +80,7 @@ public abstract class PlayerDataManager {
                     "point cannot be less than 0 (point: " + point + ")");
             }
             this.point = point;
+            isChanged = true;
         }
 
         public void addPoint(int point) {
@@ -62,6 +89,7 @@ public abstract class PlayerDataManager {
                     "point cannot be less than 0 (point: " + point + ")");
             }
             this.point += point;
+            isChanged = true;
         }
 
         public void removePoint(int point) {
@@ -70,6 +98,7 @@ public abstract class PlayerDataManager {
                     "point cannot be less than 0 (point: " + (this.point - point) + ")");
             }
             this.point -= point;
+            isChanged = true;
         }
     }
 }

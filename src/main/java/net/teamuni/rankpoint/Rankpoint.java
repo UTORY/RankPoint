@@ -7,6 +7,7 @@ import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
 import net.teamuni.rankpoint.data.PlayerDataManager;
 import net.teamuni.rankpoint.data.SqliteDataManager;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -74,17 +75,18 @@ public final class Rankpoint extends JavaPlugin {
                 File file = new File(cf.getString("player-data.SQLite.file"));
                 try {
                     playerDataManager = new SqliteDataManager(tableName, file);
-                    return true;
                 } catch (SQLException e) {
                     e.printStackTrace();
                     return false;
                 }
         }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, playerDataManager::saveAllData, saveInterval, saveInterval);
+        return true;
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        playerDataManager.close();
     }
 
     public Permission getPermission() {
