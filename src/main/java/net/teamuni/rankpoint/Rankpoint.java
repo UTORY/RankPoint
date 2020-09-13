@@ -1,15 +1,21 @@
 package net.teamuni.rankpoint;
 
+import java.io.File;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
+import net.teamuni.rankpoint.data.PlayerDataManager;
+import net.teamuni.rankpoint.data.SqliteDataManager;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Rankpoint extends JavaPlugin {
 
     private Permission perms;
+    private PlayerDataManager playerDataManager;
     private LinkedHashMap<String, Integer> groupMap = new LinkedHashMap<>();
 
     @Override
@@ -21,6 +27,11 @@ public final class Rankpoint extends JavaPlugin {
         }
         if (!setupConfig()) {
             getLogger().severe("Config 를 불러올 수 없습니다.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        if (!setupDatabase()) {
+            getLogger().severe("데이터베이스에 연결할 수 없습니다.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -52,6 +63,25 @@ public final class Rankpoint extends JavaPlugin {
         return true;
     }
 
+    private boolean setupDatabase() {
+        FileConfiguration cf = getConfig();
+        String storageType = cf.getString("player-data.storage");
+        long saveInterval = cf.getLong("player-data.save-interval");
+        switch (storageType.toLowerCase()) {
+            case "sqlite":
+            default:
+                String tableName = cf.getString("player-data.SQLite.tablename");
+                File file = new File(cf.getString("player-data.SQLite.file"));
+                try {
+                    playerDataManager = new SqliteDataManager(tableName, file);
+                    return true;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+        }
+    }
+
     @Override
     public void onDisable() {
         // Plugin shutdown logic
@@ -59,5 +89,9 @@ public final class Rankpoint extends JavaPlugin {
 
     public Permission getPermission() {
         return perms;
+    }
+
+    public PlayerDataManager getPlayerDataManager() {
+        return playerDataManager;
     }
 }

@@ -1,3 +1,10 @@
+player-data:
+  storage: sqlite
+  save-interval: 300
+  SQLite:
+    tablename: Rankpoint
+    file: './plugins/Rankpoint/SQLite.db'
+
 # 아래는 설정 예시
 groups:
   1:
