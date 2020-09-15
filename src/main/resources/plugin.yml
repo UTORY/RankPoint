@@ -7,4 +7,15 @@ depend: [Vault]
 
 commands:
   rankpoint:
-    
+    aliases: [rp, rpoint, rpoints, rankpoints]
+    permission: rankpoint.use
+
+permissions:
+  rankpoint.*:
+    children:
+      rankpoint.use: true
+      rankpoint.admin: true
+  rankpoint.use:
+    default: true
+  rankpoint.admin:
+    default: op

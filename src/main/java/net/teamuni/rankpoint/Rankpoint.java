@@ -10,6 +10,7 @@ import net.teamuni.rankpoint.data.SqliteDataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,6 +18,7 @@ public final class Rankpoint extends JavaPlugin {
 
     private Permission perms;
     private PlayerDataManager playerDataManager;
+    private Message message;
     private LinkedHashMap<String, Integer> groupMap = new LinkedHashMap<>();
 
     @Override
@@ -53,6 +55,11 @@ public final class Rankpoint extends JavaPlugin {
 
     private boolean setupConfig() {
         saveDefaultConfig();
+        File msgConf = new File(getDataFolder(), "message.yml");
+        if (!msgConf.exists()) {
+            saveResource("message.yml", false);
+        }
+        message = new Message(YamlConfiguration.loadConfiguration(msgConf));
         ConfigurationSection groups = getConfig().getConfigurationSection("groups");
         if (groups == null) {
             getLogger().severe("config의 groups 설정을 불러오는데 실패했습니다.");
@@ -80,6 +87,7 @@ public final class Rankpoint extends JavaPlugin {
                     return false;
                 }
         }
+        // TODO Thread-safe 하게 바꾸기!
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, playerDataManager::saveAllData, saveInterval, saveInterval);
         return true;
     }
