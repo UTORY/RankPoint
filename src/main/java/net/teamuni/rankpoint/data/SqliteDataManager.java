@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class SqliteDataManager extends PlayerDataManager {
 
@@ -18,11 +21,13 @@ public final class SqliteDataManager extends PlayerDataManager {
         }
     }
 
+    private final ExecutorService executor;
     private final Connection conn;
     private final PreparedStatement selectPoint;
     private final PreparedStatement insertPoint;
 
     public SqliteDataManager(String tableName, File dbFile) throws SQLException {
+        executor = Executors.newSingleThreadExecutor();
         conn = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getPath());
         String sql = "CREATE TABLE IF NOT EXISTS " + tableName
             + " (UUID CHAR(36) NOT NULL PRIMARY KEY, Point INT NOT NULL)";
@@ -39,15 +44,22 @@ public final class SqliteDataManager extends PlayerDataManager {
     @Override
     protected int loadPoint(UUID uuid) {
         try {
-            selectPoint.setString(1, uuid.toString());
-            ResultSet rs = selectPoint.executeQuery();
-            int r = 0;
-            if (rs.next()) {
-                r = rs.getInt(1);
-            }
-            rs.close();
-            return r;
-        } catch (SQLException e) {
+            return executor.submit(() -> {
+                try {
+                    selectPoint.setString(1, uuid.toString());
+                    ResultSet rs = selectPoint.executeQuery();
+                    int r = 0;
+                    if (rs.next()) {
+                        r = rs.getInt(1);
+                    }
+                    rs.close();
+                    return r;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return 0;
         }
@@ -55,17 +67,20 @@ public final class SqliteDataManager extends PlayerDataManager {
 
     @Override
     protected void savePoint(UUID uuid, int point) {
-        try {
-            insertPoint.setString(1, uuid.toString());
-            insertPoint.setInt(2, point);
-            insertPoint.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        executor.execute(() -> {
+            try {
+                insertPoint.setString(1, uuid.toString());
+                insertPoint.setInt(2, point);
+                insertPoint.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
     protected void closeDatabase() {
+        executor.shutdown();
         try {
             if (selectPoint != null && !selectPoint.isClosed()) {
                 selectPoint.close();

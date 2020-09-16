@@ -87,8 +87,7 @@ public final class Rankpoint extends JavaPlugin {
                     return false;
                 }
         }
-        // TODO Thread-safe 하게 바꾸기!
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, playerDataManager::saveAllData, saveInterval, saveInterval);
+        Bukkit.getScheduler().runTaskTimer(this, playerDataManager::saveAllData, saveInterval, saveInterval);
         return true;
     }
 
