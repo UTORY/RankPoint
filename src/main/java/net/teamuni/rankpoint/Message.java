@@ -3,7 +3,7 @@ package net.teamuni.rankpoint;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.yaml.snakeyaml.error.YAMLException;
 
-public class Message {
+public final class Message {
 
     private final FileConfiguration msgConf;
 
@@ -11,9 +11,9 @@ public class Message {
         this.msgConf = msgConf;
     }
 
-    public String getMsg(String path, Object... format) {
+    public String getMsg(String path) {
         if (msgConf.isSet(path)) {
-            return String.format(msgConf.getString(path), format);
+            return msgConf.getString(path);
         } else {
             throw new YAMLException("message.yml : " + path + "를 불러올 수 없습니다.");
         }

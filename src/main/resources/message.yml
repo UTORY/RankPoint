@@ -1,3 +1,10 @@
 command:
   help:
     me: "&7/rankpoint me &6: 현재 자신이 가지고 있는 포인트를 표시합니다."
+    give: "&7/rankpoint give <name> <points> &6: 주어진 플레이어에게 포인트룰 추가합니다."
+    giveall: "&7/rankpoint giveall <points> &6: 모든 온라인 플레이어에게 포인트를 추가합니다."
+    take: "&7/rankpoint take <name> <points> &6: 주어진 플레이어의 포인트를 차감합니다."
+    look: "&7/rankpoint look <name> &6: 주어진 플레이어의 포인트를 조회합니다."
+    set: "&7/rankpoint set <name> <points> &6: 주어진 플레이어의 포인트를 설정합니다."
+    reset: "&7/rankpoint reset <name> &6: 주어진 플레이어의 포인트를 0으로 재설정합니다."
+    reload: "&7/rankpoint reload &6: 구성을 다시 로드합니다."

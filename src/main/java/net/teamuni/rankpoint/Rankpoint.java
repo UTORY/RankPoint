@@ -8,6 +8,7 @@ import net.milkbowl.vault.permission.Permission;
 import net.teamuni.rankpoint.data.PlayerDataManager;
 import net.teamuni.rankpoint.data.SqliteDataManager;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,6 +39,10 @@ public final class Rankpoint extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        PluginCommand command = getCommand("rankpoint");
+        RPCommandExecutor executor = new RPCommandExecutor(this);
+        command.setExecutor(executor);
+        command.setTabCompleter(executor);
     }
 
     private boolean setupPermission() {
@@ -102,5 +107,9 @@ public final class Rankpoint extends JavaPlugin {
 
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
+    }
+
+    public Message getMessage() {
+        return message;
     }
 }

@@ -26,6 +26,10 @@ public abstract class PlayerDataManager {
         return playerDataMap.get(uuid);
     }
 
+    public boolean isLoaded(UUID uuid) {
+        return playerDataMap.containsKey(uuid);
+    }
+
     public void unloadPlayerData(UUID uuid) {
         if (!playerDataMap.containsKey(uuid)) {
             return;
