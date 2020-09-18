@@ -8,3 +8,5 @@ command:
     set: "&7/rankpoint set <name> <points> &6: 주어진 플레이어의 포인트를 설정합니다."
     reset: "&7/rankpoint reset <name> &6: 주어진 플레이어의 포인트를 0으로 재설정합니다."
     reload: "&7/rankpoint reload &6: 구성을 다시 로드합니다."
+  me: "&6나의 포인트: &a%1$d &6rp" # 포인트: %1$d
+  look: "&6%2$s님의 포인트: &a%1$d &6rp" # 포인트: %1&d, 주어진 플레이어의 닉네임: %2$s

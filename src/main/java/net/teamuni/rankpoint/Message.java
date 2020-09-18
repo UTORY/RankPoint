@@ -13,7 +13,7 @@ public final class Message {
 
     public String getMsg(String path) {
         if (msgConf.isSet(path)) {
-            return msgConf.getString(path);
+            return msgConf.getString(path).replace('&', '§');
         } else {
             throw new YAMLException("message.yml : " + path + "를 불러올 수 없습니다.");
         }
