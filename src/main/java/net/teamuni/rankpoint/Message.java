@@ -11,9 +11,9 @@ public final class Message {
         this.msgConf = msgConf;
     }
 
-    public String getMsg(String path) {
+    public String getMsg(String path, Object... objects) {
         if (msgConf.isSet(path)) {
-            return msgConf.getString(path).replace('&', '§');
+            return String.format(msgConf.getString(path).replace('&', '§'), objects);
         } else {
             throw new YAMLException("message.yml : " + path + "를 불러올 수 없습니다.");
         }
