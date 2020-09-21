@@ -1,5 +1,7 @@
 package net.teamuni.rankpoint;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +19,7 @@ import org.bukkit.entity.Player;
 
 public final class RPCommandExecutor implements TabExecutor {
 
-    public static final Pattern USERNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{3,16}");
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{3,16}");
 
     private final Rankpoint instance;
 
@@ -155,7 +157,9 @@ public final class RPCommandExecutor implements TabExecutor {
                     }
                     break;
                 default:
-                    sender.sendMessage(msg.getMsg("command.help.me"));
+                    if (senderIsPlayer) {
+                        sender.sendMessage(msg.getMsg("command.help.me"));
+                    }
                     sender.sendMessage(msg.getMsg("command.help.look"));
                     if (senderHasPerm) {
                         sender.sendMessage(msg.getMsg("command.help.give"));
@@ -174,7 +178,35 @@ public final class RPCommandExecutor implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias,
         String[] args) {
-        return null;
+        ArrayList<String> list = new ArrayList<>();
+        if (args.length == 0) {
+            if (sender instanceof Player) {
+                list.add("me");
+            }
+            list.add("look");
+            if (sender.hasPermission("rankpoint.admin")) {
+                list.add("give");
+                list.add("giveall");
+                list.add("take");
+                list.add("set");
+                list.add("reset");
+                list.add("reload");
+            }
+        } else if (args.length == 1) {
+            switch (args[0]) {
+                case "look":
+                    list = null;
+                    break;
+                case "give": case "take": case "set": case "reset":
+                    if (sender.hasPermission("rankpoint.admin")) {
+                        list = null;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return list;
     }
 
     private boolean checkPlayerName(String name) {
