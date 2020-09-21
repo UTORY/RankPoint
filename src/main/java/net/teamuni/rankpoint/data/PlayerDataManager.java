@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import net.teamuni.rankpoint.Rankpoint;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public abstract class PlayerDataManager {
 
@@ -35,7 +40,7 @@ public abstract class PlayerDataManager {
             return;
         }
         PlayerData data = playerDataMap.remove(uuid);
-        if(data.isChanged) {
+        if (data.isChanged) {
             savePoint(uuid, data.getPoint());
         }
     }
@@ -65,7 +70,7 @@ public abstract class PlayerDataManager {
         }
     }
 
-    public static class PlayerData {
+    public static final class PlayerData {
 
         private int point;
         private boolean isChanged = false;
@@ -103,6 +108,27 @@ public abstract class PlayerDataManager {
             }
             this.point -= point;
             isChanged = true;
+        }
+    }
+
+    public static final class PlayerListener implements Listener {
+
+        private final Rankpoint instance;
+
+        public PlayerListener(Rankpoint instance) {
+            this.instance = instance;
+        }
+
+        @EventHandler
+        public void onJoin(PlayerJoinEvent event) {
+            PlayerDataManager playerDataManager = instance.getPlayerDataManager();
+            playerDataManager.loadPlayerData(event.getPlayer().getUniqueId());
+        }
+
+        @EventHandler
+        public void onQuit(PlayerQuitEvent event) {
+            PlayerDataManager playerDataManager = instance.getPlayerDataManager();
+            playerDataManager.unloadPlayerData(event.getPlayer().getUniqueId());
         }
     }
 }

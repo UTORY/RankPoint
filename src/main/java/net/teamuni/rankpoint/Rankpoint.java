@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
 import net.teamuni.rankpoint.data.PlayerDataManager;
+import net.teamuni.rankpoint.data.PlayerDataManager.PlayerListener;
 import net.teamuni.rankpoint.data.SqliteDataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -20,7 +21,7 @@ public final class Rankpoint extends JavaPlugin {
     private Permission perms;
     private PlayerDataManager playerDataManager;
     private Message message;
-    private LinkedHashMap<String, Integer> groupMap = new LinkedHashMap<>();
+    private final LinkedHashMap<String, Integer> groupMap = new LinkedHashMap<>();
 
     @Override
     public void onEnable() {
@@ -43,6 +44,13 @@ public final class Rankpoint extends JavaPlugin {
         RPCommandExecutor executor = new RPCommandExecutor(this);
         command.setExecutor(executor);
         command.setTabCompleter(executor);
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+    }
+
+    public boolean configReload() {
+        Bukkit.getScheduler().cancelTasks(this);
+        playerDataManager.close();
+        return setupConfig() && setupDatabase();
     }
 
     private boolean setupPermission() {
@@ -65,6 +73,7 @@ public final class Rankpoint extends JavaPlugin {
             saveResource("message.yml", false);
         }
         message = new Message(YamlConfiguration.loadConfiguration(msgConf));
+        groupMap.clear();
         ConfigurationSection groups = getConfig().getConfigurationSection("groups");
         if (groups == null) {
             getLogger().severe("config의 groups 설정을 불러오는데 실패했습니다.");
@@ -92,12 +101,14 @@ public final class Rankpoint extends JavaPlugin {
                     return false;
                 }
         }
-        Bukkit.getScheduler().runTaskTimer(this, playerDataManager::saveAllData, saveInterval, saveInterval);
+        Bukkit.getScheduler()
+            .runTaskTimer(this, playerDataManager::saveAllData, saveInterval, saveInterval);
         return true;
     }
 
     @Override
     public void onDisable() {
+        Bukkit.getScheduler().cancelTasks(this);
         playerDataManager.close();
     }
 

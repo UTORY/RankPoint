@@ -145,7 +145,11 @@ public final class RPCommandExecutor implements TabExecutor {
                     break;
                 case "reload":
                     if (senderHasPerm) {
-                        // TODO Reload 추가
+                        if (instance.configReload()) {
+                            sender.sendMessage(msg.getMsg("command.reload.success"));
+                        } else {
+                            sender.sendMessage(msg.getMsg("command.reload.failed"));
+                        }
                     } else {
                         sender.sendMessage(msg.getMsg("command.donthaveperm"));
                     }
