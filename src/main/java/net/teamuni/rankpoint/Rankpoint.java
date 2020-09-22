@@ -2,7 +2,9 @@ package net.teamuni.rankpoint;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
 import net.teamuni.rankpoint.data.PlayerDataManager;
@@ -21,7 +23,7 @@ public final class Rankpoint extends JavaPlugin {
     private Permission perms;
     private PlayerDataManager playerDataManager;
     private Message message;
-    private final LinkedHashMap<String, Integer> groupMap = new LinkedHashMap<>();
+    private GroupConfig groupConfig;
 
     @Override
     public void onEnable() {
@@ -73,15 +75,25 @@ public final class Rankpoint extends JavaPlugin {
             saveResource("message.yml", false);
         }
         message = new Message(YamlConfiguration.loadConfiguration(msgConf));
-        groupMap.clear();
         ConfigurationSection groups = getConfig().getConfigurationSection("groups");
         if (groups == null) {
             getLogger().severe("config의 groups 설정을 불러오는데 실패했습니다.");
             return false;
         }
+        List<String> groupNames = new ArrayList<>();
+        List<Integer> pointConditions = new ArrayList<>();
         groups.getKeys(false).stream().sorted().map(groups::getConfigurationSection)
             .filter(Objects::nonNull)
-            .forEach(section -> groupMap.put(section.getString("group"), section.getInt("point")));
+            .forEach(section -> {
+                String groupName = section.getString("group");
+                if (Arrays.stream(perms.getGroups()).anyMatch(s -> s.equalsIgnoreCase(groupName))) {
+                    groupNames.add(groupName);
+                    pointConditions.add(section.getInt("point"));
+                } else {
+                    getLogger().severe(groupName + " 는(은) 없는 그룹입니다.");
+                }
+            });
+        groupConfig = new GroupConfig(this, groupNames, pointConditions);
         return true;
     }
 
@@ -122,5 +134,9 @@ public final class Rankpoint extends JavaPlugin {
 
     public Message getMessage() {
         return message;
+    }
+
+    public GroupConfig getGroupConfig() {
+        return groupConfig;
     }
 }

@@ -7,7 +7,7 @@ public final class Message {
 
     private final FileConfiguration msgConf;
 
-    public Message(FileConfiguration msgConf) {
+    Message(FileConfiguration msgConf) {
         this.msgConf = msgConf;
     }
 

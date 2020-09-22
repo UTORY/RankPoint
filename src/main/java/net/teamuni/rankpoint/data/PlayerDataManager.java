@@ -90,6 +90,7 @@ public abstract class PlayerDataManager {
             }
             this.point = point;
             isChanged = true;
+            // TODO 그룹 업데이트 하기
         }
 
         public void addPoint(int point) {
