@@ -18,4 +18,4 @@ groups:
     point: 100 # -
   4:
     group: VIP2
-    point: -1 # 101 부터 VIP2 (-1 은 제한 X)
+    point: -1 # 101 부터 VIP2 (마지막은 무슨숫자든 제한 X)

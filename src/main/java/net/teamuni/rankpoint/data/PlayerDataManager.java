@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import javafx.scene.Group;
+import net.teamuni.rankpoint.GroupConfig;
 import net.teamuni.rankpoint.Rankpoint;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,7 +23,7 @@ public abstract class PlayerDataManager {
     protected abstract void closeDatabase();
 
     public void loadPlayerData(UUID uuid) {
-        playerDataMap.put(uuid, new PlayerData(loadPoint(uuid)));
+        playerDataMap.put(uuid, new PlayerData(uuid, loadPoint(uuid)));
     }
 
     public PlayerData getPlayerData(UUID uuid) {
@@ -72,10 +74,13 @@ public abstract class PlayerDataManager {
 
     public static final class PlayerData {
 
+        private final Rankpoint instance = Rankpoint.getPlugin(Rankpoint.class);
+        private final UUID uuid;
         private int point;
         private boolean isChanged = false;
 
-        private PlayerData(int point) {
+        private PlayerData(UUID uuid, int point) {
+            this.uuid = uuid;
             this.point = point;
         }
 
@@ -88,9 +93,10 @@ public abstract class PlayerDataManager {
                 throw new IllegalArgumentException(
                     "point cannot be less than 0 (point: " + point + ")");
             }
+            int oldPoint = this.point;
             this.point = point;
             isChanged = true;
-            // TODO 그룹 업데이트 하기
+            checkRank(oldPoint);
         }
 
         public void addPoint(int point) {
@@ -98,8 +104,10 @@ public abstract class PlayerDataManager {
                 throw new IllegalArgumentException(
                     "point cannot be less than 0 (point: " + point + ")");
             }
+            int oldPoint = this.point;
             this.point += point;
             isChanged = true;
+            checkRank(oldPoint);
         }
 
         public void removePoint(int point) {
@@ -107,8 +115,18 @@ public abstract class PlayerDataManager {
                 throw new IllegalArgumentException(
                     "point cannot be less than 0 (point: " + (this.point - point) + ")");
             }
+            int oldPoint = this.point;
             this.point -= point;
             isChanged = true;
+            checkRank(oldPoint);
+        }
+
+        private void checkRank(int oldPoint) {
+            GroupConfig groupConfig = instance.getGroupConfig();
+
+            if (groupConfig.findGroup(oldPoint) != groupConfig.findGroup(point)) {
+                groupConfig.updatePlayerRank(uuid);
+            }
         }
     }
 
