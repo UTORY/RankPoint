@@ -51,10 +51,10 @@ public final class GroupConfig {
         int n = 0;
         for (int cond : this.pointConditions) {
             if (point <= cond) {
-                break;
+                return n;
             }
             n++;
         }
-        return n;
+        return n-1;
     }
 }

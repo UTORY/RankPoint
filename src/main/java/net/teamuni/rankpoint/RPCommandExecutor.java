@@ -1,7 +1,6 @@
 package net.teamuni.rankpoint;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -136,7 +135,12 @@ public final class RPCommandExecutor implements TabExecutor {
                         if (args.length == 2 && checkPlayerName(args[1])) {
                             loadAndRun(args[1], (data, player) -> {
                                 data.setPoint(0);
-                                sender.sendMessage(msg.getMsg("command.reset", player.getName()));
+                                sender.sendMessage(
+                                    msg.getMsg("command.reset.sender", player.getName()));
+                                if (player.isOnline()) {
+                                    ((Player) player).sendMessage(
+                                        msg.getMsg("command.reset.receiver", sender.getName()));
+                                }
                             });
                             return true;
                         }
@@ -171,6 +175,19 @@ public final class RPCommandExecutor implements TabExecutor {
                     }
                     break;
             }
+        } else {
+            if (senderIsPlayer) {
+                sender.sendMessage(msg.getMsg("command.help.me"));
+            }
+            sender.sendMessage(msg.getMsg("command.help.look"));
+            if (senderHasPerm) {
+                sender.sendMessage(msg.getMsg("command.help.give"));
+                sender.sendMessage(msg.getMsg("command.help.giveall"));
+                sender.sendMessage(msg.getMsg("command.help.take"));
+                sender.sendMessage(msg.getMsg("command.help.set"));
+                sender.sendMessage(msg.getMsg("command.help.reset"));
+                sender.sendMessage(msg.getMsg("command.help.reload"));
+            }
         }
         return true;
     }
@@ -179,7 +196,7 @@ public final class RPCommandExecutor implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias,
         String[] args) {
         ArrayList<String> list = new ArrayList<>();
-        if (args.length == 0) {
+        if (args.length == 0 || args[0].isEmpty()) {
             if (sender instanceof Player) {
                 list.add("me");
             }
@@ -192,7 +209,7 @@ public final class RPCommandExecutor implements TabExecutor {
                 list.add("reset");
                 list.add("reload");
             }
-        } else if (args.length == 1) {
+        } else if (args.length == 2) {
             switch (args[0]) {
                 case "look":
                     list = null;

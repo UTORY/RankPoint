@@ -85,14 +85,17 @@ public final class Rankpoint extends JavaPlugin {
         groups.getKeys(false).stream().sorted().map(groups::getConfigurationSection)
             .filter(Objects::nonNull)
             .forEach(section -> {
-                String groupName = section.getString("group");
-                if (Arrays.stream(perms.getGroups()).anyMatch(s -> s.equalsIgnoreCase(groupName))) {
+                String groupName = section.getString("group").toLowerCase();
+                if (Arrays.asList(perms.getGroups()).contains(groupName)) {
                     groupNames.add(groupName);
                     pointConditions.add(section.getInt("point"));
                 } else {
                     getLogger().severe(groupName + " 는(은) 없는 그룹입니다.");
                 }
             });
+        if (groupNames.isEmpty() || pointConditions.isEmpty()) {
+            return false;
+        }
         groupConfig = new GroupConfig(this, groupNames, pointConditions);
         return true;
     }
