@@ -43,7 +43,7 @@ public final class RPCommandExecutor implements TabExecutor {
                     if (args.length == 2 && checkPlayerName(args[1])) {
                         loadAndRun(args[1], (data, player) -> sender
                             .sendMessage(
-                                msg.getMsg("command.look", data.getPoint(), player.getName())));
+                                msg.getMsg("command.look", player.getName(), data.getPoint())));
                         return true;
                     }
                     sender.sendMessage(msg.getMsg("command.help.look"));
@@ -55,11 +55,10 @@ public final class RPCommandExecutor implements TabExecutor {
                             loadAndRun(args[1], (data, player) -> {
                                 data.addPoint(point);
                                 sender.sendMessage(
-                                    msg.getMsg("command.give.sender", point, player.getName()));
+                                    msg.getMsg("command.give.sender", player.getName(), point));
                                 if (player.isOnline()) {
                                     ((Player) player).sendMessage(
-                                        msg.getMsg("command.give.receiver", point,
-                                            sender.getName()));
+                                        msg.getMsg("command.give.receiver", sender.getName(), point));
                                 }
                             });
                             return true;
@@ -95,11 +94,10 @@ public final class RPCommandExecutor implements TabExecutor {
                                     data.removePoint(point);
                                 }
                                 sender.sendMessage(
-                                    msg.getMsg("command.take.sender", point, player.getName()));
+                                    msg.getMsg("command.take.sender", player.getName(), point));
                                 if (player.isOnline()) {
                                     ((Player) player).sendMessage(
-                                        msg.getMsg("command.take.receiver", point,
-                                            sender.getName()));
+                                        msg.getMsg("command.take.receiver", sender.getName(), point));
                                 }
                             });
                             return true;
@@ -116,11 +114,10 @@ public final class RPCommandExecutor implements TabExecutor {
                             loadAndRun(args[1], (data, player) -> {
                                 data.setPoint(point);
                                 sender.sendMessage(
-                                    msg.getMsg("command.set.sender", point, player.getName()));
+                                    msg.getMsg("command.set.sender", player.getName(), point));
                                 if (player.isOnline()) {
                                     ((Player) player).sendMessage(
-                                        msg.getMsg("command.set.receiver", point,
-                                            sender.getName()));
+                                        msg.getMsg("command.set.receiver", sender.getName(), point));
                                 }
                             });
                             return true;

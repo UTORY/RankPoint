@@ -9,21 +9,21 @@ command:
     set: "&7/rankpoint set <name> <points> &6: 주어진 플레이어의 포인트를 설정합니다."
     reset: "&7/rankpoint reset <name> &6: 주어진 플레이어의 포인트를 0으로 재설정합니다."
     reload: "&7/rankpoint reload &6: 구성을 다시 로드합니다."
-  me: "&6나의 포인트: &a%1$d &6rp" # 포인트: %1$d
-  look: "&6%2$s님의 포인트: &a%1$d &6rp" # 포인트: %1$d, 주어진 플레이어의 닉네임: %2$s
-  give: # 추가한 포인트: %1$d, 플레이어의 닉네임: %2$s
-    sender: "&6%2$s님에게 %1$d 포인트를 추가하였습니다."
-    receiver: "&6%2$s님이 당신에게 %1$d 포인트를 추가하였습니다."
-  giveall: "&6모두에게 %1$d 포인트를 추가하였습니다." # 포인트: %1$d
-  take: # 차감한 포인트: %1$d, 플레이어의 닉네임: %2$s
-    sender: "&6%2$s님에게 %1$d 포인트를 차감하였습니다."
-    receiver: "&6%2$s님이 당신에게 %1$d 포인트를 차감하였습니다."
-  set: # 설정한 포인트: %1$d, 플레이어의 닉네임: %2$s
-    sender: "&6%2$s님의 포인트를 %1$d 포인트로 설정하였습니다."
-    receiver: "&6%2$s님이 당신의 포인트를 %1$d 포인트 로 설정하였습니다."
-  reset: # 플레이어의 닉네임: %1$s
-    sender: "&6%1$s님의 포인트를 초기화 하였습니다."
-    receiver: "&6%1$s님이 당신의 포인트를 초기화 하였습니다."
+  me: "&6나의 포인트: &a<point> &6rp" # 포인트: <point>
+  look: "&6<player>님의 포인트: &a<point> &6rp" # 포인트: <point>, 주어진 플레이어의 닉네임: <player>
+  give: # 추가한 포인트: <point>, 플레이어의 닉네임: <player>
+    sender: "&6<player>님에게 <point> 포인트를 추가하였습니다."
+    receiver: "&6<player>님이 당신에게 <point> 포인트를 추가하였습니다."
+  giveall: "&6모두에게 <point> 포인트를 추가하였습니다." # 포인트: <point>
+  take: # 차감한 포인트: <point>, 플레이어의 닉네임: <player>
+    sender: "&6<player>님에게 <point> 포인트를 차감하였습니다."
+    receiver: "&6<player>님이 당신에게 <point> 포인트를 차감하였습니다."
+  set: # 설정한 포인트: <point>, 플레이어의 닉네임: <player>
+    sender: "&6<player>님의 포인트를 <point> 포인트로 설정하였습니다."
+    receiver: "&6<player>님이 당신의 포인트를 <point> 포인트 로 설정하였습니다."
+  reset: # 플레이어의 닉네임: <player>
+    sender: "&6<player>님의 포인트를 초기화 하였습니다."
+    receiver: "&6<player>님이 당신의 포인트를 초기화 하였습니다."
   reload:
     success: "&a설정을 다시 불러오는데 성공하였습니다."
     failed: "&c설정을 다시 불러오는데 실패하였습니다."
