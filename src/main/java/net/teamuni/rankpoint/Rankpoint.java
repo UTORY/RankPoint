@@ -82,8 +82,8 @@ public final class Rankpoint extends JavaPlugin {
         }
         List<String> groupNames = new ArrayList<>();
         List<Integer> pointConditions = new ArrayList<>();
-        groups.getKeys(false).stream().sorted().map(groups::getConfigurationSection)
-            .filter(Objects::nonNull)
+        groups.getKeys(false).stream().mapToInt(Integer::parseInt).sorted()
+            .mapToObj(String::valueOf).map(groups::getConfigurationSection).filter(Objects::nonNull)
             .forEach(section -> {
                 String groupName = section.getString("group").toLowerCase();
                 if (Arrays.asList(perms.getGroups()).contains(groupName)) {
