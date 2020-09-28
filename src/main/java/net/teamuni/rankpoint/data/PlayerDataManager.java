@@ -142,6 +142,7 @@ public abstract class PlayerDataManager {
         public void onJoin(PlayerJoinEvent event) {
             PlayerDataManager playerDataManager = instance.getPlayerDataManager();
             playerDataManager.loadPlayerData(event.getPlayer().getUniqueId());
+            instance.getGroupConfig().updatePlayerRank(event.getPlayer().getUniqueId());
         }
 
         @EventHandler
