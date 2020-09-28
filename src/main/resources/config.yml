@@ -4,6 +4,14 @@ player-data:
   SQLite:
     tablename: Rankpoint
     file: './plugins/Rankpoint/SQLite.db'
+  MySQL:
+    hostname: localhost
+    port: 3306
+    database: minecraft
+    tablename: Rankpoint
+    parameters: '?useSSL=false'
+    username: root
+    password: password
 
 # 아래는 설정 예시
 groups:

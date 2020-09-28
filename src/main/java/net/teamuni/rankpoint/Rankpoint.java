@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
+import net.teamuni.rankpoint.data.MysqlDataManager;
 import net.teamuni.rankpoint.data.PlayerDataManager;
 import net.teamuni.rankpoint.data.PlayerDataManager.PlayerListener;
 import net.teamuni.rankpoint.data.SqliteDataManager;
@@ -106,6 +107,22 @@ public final class Rankpoint extends JavaPlugin {
         String storageType = cf.getString("player-data.storage");
         long saveInterval = cf.getLong("player-data.save-interval");
         switch (storageType.toLowerCase()) {
+            case "mysql":
+                String hostName = cf.getString("player-data.MySQL.hostname");
+                int port = cf.getInt("player-data.MySQL.port");
+                String databaseName = cf.getString("player-data.MySQL.database");
+                String tableNameMySQL = cf.getString("player-data.MySQL.tablename");
+                String parameters = cf.getString("player-data.MySQL.parameters");
+                String userName = cf.getString("player-data.MySQL.username");
+                String password = cf.getString("player-data.MySQL.password");
+                try {
+                    playerDataManager = new MysqlDataManager(hostName, port, databaseName,
+                        parameters, tableNameMySQL, userName, password);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                break;
             case "sqlite":
             default:
                 String tableName = cf.getString("player-data.SQLite.tablename");
@@ -116,6 +133,7 @@ public final class Rankpoint extends JavaPlugin {
                     e.printStackTrace();
                     return false;
                 }
+                break;
         }
         Bukkit.getScheduler()
             .runTaskTimer(this, playerDataManager::saveAllData, saveInterval, saveInterval);
