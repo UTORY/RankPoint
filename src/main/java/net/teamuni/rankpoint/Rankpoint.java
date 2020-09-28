@@ -70,6 +70,7 @@ public final class Rankpoint extends JavaPlugin {
 
     private boolean setupConfig() {
         saveDefaultConfig();
+        reloadConfig();
         File msgConf = new File(getDataFolder(), "message.yml");
         if (!msgConf.exists()) {
             saveResource("message.yml", false);
