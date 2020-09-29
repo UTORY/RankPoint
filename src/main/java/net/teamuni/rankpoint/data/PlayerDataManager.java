@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import net.teamuni.rankpoint.GroupConfig;
 import net.teamuni.rankpoint.Rankpoint;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -122,10 +123,14 @@ public abstract class PlayerDataManager {
         }
 
         private void checkRank(int oldPoint) {
+            if (Bukkit.getPlayer(uuid) == null) {
+                return;
+            }
+
             GroupConfig groupConfig = instance.getGroupConfig();
 
             if (groupConfig.findGroup(oldPoint) != groupConfig.findGroup(point)) {
-                groupConfig.updatePlayerRank(uuid);
+                groupConfig.updatePlayerRank(Bukkit.getPlayer(uuid));
             }
         }
     }
@@ -142,7 +147,7 @@ public abstract class PlayerDataManager {
         public void onJoin(PlayerJoinEvent event) {
             PlayerDataManager playerDataManager = instance.getPlayerDataManager();
             playerDataManager.loadPlayerData(event.getPlayer().getUniqueId());
-            instance.getGroupConfig().updatePlayerRank(event.getPlayer().getUniqueId());
+            instance.getGroupConfig().updatePlayerRank(event.getPlayer());
         }
 
         @EventHandler

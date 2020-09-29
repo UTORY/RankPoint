@@ -2,11 +2,9 @@ package net.teamuni.rankpoint;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import net.milkbowl.vault.permission.Permission;
 import net.teamuni.rankpoint.data.PlayerDataManager;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 public final class GroupConfig {
 
@@ -25,11 +23,7 @@ public final class GroupConfig {
         }
     }
 
-    public void updatePlayerRank(UUID uuid) {
-        updatePlayerRank(Bukkit.getOfflinePlayer(uuid));
-    }
-
-    public void updatePlayerRank(OfflinePlayer player) {
+    public void updatePlayerRank(Player player) {
         PlayerDataManager playerDataManager = instance.getPlayerDataManager();
         Permission permission = instance.getPermission();
 
@@ -55,6 +49,6 @@ public final class GroupConfig {
             }
             n++;
         }
-        return n-1;
+        return n - 1;
     }
 }
