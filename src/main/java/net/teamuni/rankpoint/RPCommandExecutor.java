@@ -32,7 +32,7 @@ public final class RPCommandExecutor implements TabExecutor {
         boolean senderHasPerm = sender.hasPermission("rankpoint.admin");
         Message msg = instance.getMessage();
         if (args.length >= 1) {
-            switch (args[0]) {
+            switch (args[0].toLowerCase()) {
                 case "me":
                     if (senderIsPlayer) {
                         loadAndRun(((Player) sender).getUniqueId(),
