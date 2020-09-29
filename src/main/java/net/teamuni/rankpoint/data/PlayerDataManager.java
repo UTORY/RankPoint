@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import javafx.scene.Group;
 import net.teamuni.rankpoint.GroupConfig;
 import net.teamuni.rankpoint.Rankpoint;
 import org.bukkit.event.EventHandler;
@@ -67,7 +66,8 @@ public abstract class PlayerDataManager {
         if (playerDataMap.isEmpty()) {
             return;
         }
-        for (UUID uuid : playerDataMap.keySet()) {
+        HashMap<UUID, PlayerData> newPdm = new HashMap<>(playerDataMap);
+        for (UUID uuid : newPdm.keySet()) {
             unloadPlayerData(uuid);
         }
     }
