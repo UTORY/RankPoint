@@ -136,7 +136,8 @@ public final class Rankpoint extends JavaPlugin {
                 break;
         }
         Bukkit.getScheduler()
-            .runTaskTimer(this, playerDataManager::saveAllData, saveInterval, saveInterval);
+            .runTaskTimer(this, playerDataManager::saveAllData, saveInterval * 20,
+                saveInterval * 20);
         return true;
     }
 
