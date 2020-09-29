@@ -31,7 +31,7 @@ public final class RPCommandExecutor implements TabExecutor {
         boolean senderIsPlayer = sender instanceof Player;
         boolean senderHasPerm = sender.hasPermission("rankpoint.admin");
         Message msg = instance.getMessage();
-        if (args.length >= 1) {
+        if (args.length >= 1 && !args[0].equals("help")) {
             switch (args[0].toLowerCase()) {
                 case "me":
                     if (senderIsPlayer) {
@@ -56,7 +56,7 @@ public final class RPCommandExecutor implements TabExecutor {
                                 data.addPoint(point);
                                 sender.sendMessage(
                                     msg.getMsg("command.give.sender", player.getName(), point));
-                                if (player.isOnline()) {
+                                if (player.isOnline() && !sender.getName().equals(player.getName())) {
                                     ((Player) player).sendMessage(
                                         msg.getMsg("command.give.receiver", sender.getName(), point));
                                 }
@@ -95,7 +95,7 @@ public final class RPCommandExecutor implements TabExecutor {
                                 }
                                 sender.sendMessage(
                                     msg.getMsg("command.take.sender", player.getName(), point));
-                                if (player.isOnline()) {
+                                if (player.isOnline() && !sender.getName().equals(player.getName())) {
                                     ((Player) player).sendMessage(
                                         msg.getMsg("command.take.receiver", sender.getName(), point));
                                 }
@@ -115,7 +115,7 @@ public final class RPCommandExecutor implements TabExecutor {
                                 data.setPoint(point);
                                 sender.sendMessage(
                                     msg.getMsg("command.set.sender", player.getName(), point));
-                                if (player.isOnline()) {
+                                if (player.isOnline() && !sender.getName().equals(player.getName())) {
                                     ((Player) player).sendMessage(
                                         msg.getMsg("command.set.receiver", sender.getName(), point));
                                 }
@@ -134,7 +134,7 @@ public final class RPCommandExecutor implements TabExecutor {
                                 data.setPoint(0);
                                 sender.sendMessage(
                                     msg.getMsg("command.reset.sender", player.getName()));
-                                if (player.isOnline()) {
+                                if (player.isOnline() && !sender.getName().equals(player.getName())) {
                                     ((Player) player).sendMessage(
                                         msg.getMsg("command.reset.receiver", sender.getName()));
                                 }
@@ -158,18 +158,7 @@ public final class RPCommandExecutor implements TabExecutor {
                     }
                     break;
                 default:
-                    if (senderIsPlayer) {
-                        sender.sendMessage(msg.getMsg("command.help.me"));
-                    }
-                    sender.sendMessage(msg.getMsg("command.help.look"));
-                    if (senderHasPerm) {
-                        sender.sendMessage(msg.getMsg("command.help.give"));
-                        sender.sendMessage(msg.getMsg("command.help.giveall"));
-                        sender.sendMessage(msg.getMsg("command.help.take"));
-                        sender.sendMessage(msg.getMsg("command.help.set"));
-                        sender.sendMessage(msg.getMsg("command.help.reset"));
-                        sender.sendMessage(msg.getMsg("command.help.reload"));
-                    }
+                    sender.sendMessage(msg.getMsg("command.unknownarg"));
                     break;
             }
         } else {
