@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public final class SqliteDataManager extends PlayerDataManager {
 
@@ -81,6 +82,11 @@ public final class SqliteDataManager extends PlayerDataManager {
     @Override
     protected void closeDatabase() {
         executor.shutdown();
+        try {
+            if (!executor.awaitTermination(15, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException ignored) { }
         try {
             if (selectPoint != null && !selectPoint.isClosed()) {
                 selectPoint.close();
