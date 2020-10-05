@@ -12,15 +12,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public abstract class PlayerDataManager {
+public final class PlayerDataManager {
 
     private final Map<UUID, PlayerData> playerDataMap = new HashMap<>();
+    private final Rankpoint instance;
 
-    protected abstract int loadPoint(UUID uuid);
-
-    protected abstract void savePoint(UUID uuid, int point);
-
-    protected abstract void closeDatabase();
+    public PlayerDataManager(Rankpoint instance) {
+        this.instance = instance;
+    }
 
     public void loadPlayerData(UUID uuid) {
         playerDataMap.put(uuid, new PlayerData(uuid, loadPoint(uuid)));
@@ -73,6 +72,21 @@ public abstract class PlayerDataManager {
         }
     }
 
+    private int loadPoint(UUID uuid) {
+        DatabaseManager databaseManager = instance.getDatabaseManager();
+        return databaseManager.loadPoint(uuid);
+    }
+
+    private void savePoint(UUID uuid, int point) {
+        DatabaseManager databaseManager = instance.getDatabaseManager();
+        databaseManager.savePoint(uuid, point);
+    }
+
+    private void closeDatabase() {
+        DatabaseManager databaseManager = instance.getDatabaseManager();
+        databaseManager.closeDatabase();
+    }
+
     public static final class PlayerData {
 
         private final Rankpoint instance = Rankpoint.getPlugin(Rankpoint.class);
@@ -123,7 +137,7 @@ public abstract class PlayerDataManager {
         }
 
         private void checkRank(int oldPoint) {
-            if (Bukkit.getPlayer(uuid) == null) {
+            if (Bukkit.getPlayer(uuid) != null) {
                 return;
             }
 
