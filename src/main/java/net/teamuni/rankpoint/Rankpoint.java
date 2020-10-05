@@ -7,10 +7,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
-import net.teamuni.rankpoint.data.MysqlDataManager;
+import net.teamuni.rankpoint.data.DatabaseManager;
 import net.teamuni.rankpoint.data.PlayerDataManager;
 import net.teamuni.rankpoint.data.PlayerDataManager.PlayerListener;
-import net.teamuni.rankpoint.data.SqliteDataManager;
+import net.teamuni.rankpoint.data.database.Mysql;
+import net.teamuni.rankpoint.data.database.Sqlite;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,6 +24,7 @@ public final class Rankpoint extends JavaPlugin {
 
     private Permission perms;
     private PlayerDataManager playerDataManager;
+    private DatabaseManager databaseManager;
     private Message message;
     private GroupConfig groupConfig;
 
@@ -116,8 +118,9 @@ public final class Rankpoint extends JavaPlugin {
                 String userName = cf.getString("player-data.MySQL.username");
                 String password = cf.getString("player-data.MySQL.password");
                 try {
-                    playerDataManager = new MysqlDataManager(hostName, port, databaseName,
-                        parameters, tableNameMySQL, userName, password);
+                    databaseManager = new DatabaseManager(
+                        new Mysql(hostName, port, databaseName, parameters, tableNameMySQL,
+                            userName, password));
                 } catch (SQLException e) {
                     e.printStackTrace();
                     return false;
@@ -128,13 +131,14 @@ public final class Rankpoint extends JavaPlugin {
                 String tableName = cf.getString("player-data.SQLite.tablename");
                 File file = new File(cf.getString("player-data.SQLite.file"));
                 try {
-                    playerDataManager = new SqliteDataManager(tableName, file);
+                    databaseManager = new DatabaseManager(new Sqlite(tableName, file));
                 } catch (SQLException e) {
                     e.printStackTrace();
                     return false;
                 }
                 break;
         }
+        playerDataManager = new PlayerDataManager(this);
         Bukkit.getScheduler()
             .runTaskTimer(this, playerDataManager::saveAllData, saveInterval * 20,
                 saveInterval * 20);
@@ -153,6 +157,10 @@ public final class Rankpoint extends JavaPlugin {
 
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
     public Message getMessage() {
