@@ -1,32 +1,44 @@
-package net.teamuni.rankpoint.data.database;
+package net.utory.rankpoint.data.database;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public final class Sqlite implements Database {
+public class Mysql implements Database {
 
     static {
         try {
-            Class.forName("org.sqlite.JDBC");
+            Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException ignored) {
         }
     }
 
+    private final String hostName;
+    private final int port;
+    private final String database;
+    private final String parameters;
     private final String tableName;
-    private final String dbFile;
+    private final String userName;
+    private final String password;
 
-    public Sqlite(String tableName, File dbFile) {
+    public Mysql(String hostName, int port, String database, String parameters, String tableName,
+        String userName, String password) {
+        this.hostName = hostName;
+        this.port = port;
+        this.database = database;
+        this.parameters = parameters;
         this.tableName = tableName;
-        this.dbFile = dbFile.getPath();
+        this.userName = userName;
+        this.password = password;
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:" + dbFile);
+        return DriverManager
+            .getConnection(("jdbc:mysql://" + hostName + ":" + port + "/" + database + parameters),
+                userName, password);
     }
 
     @Override
@@ -44,7 +56,7 @@ public final class Sqlite implements Database {
 
     @Override
     public PreparedStatement getInsertStatement(Connection conn) throws SQLException {
-        return conn.prepareStatement(
-            "INSERT OR REPLACE INTO " + tableName + " (UUID, Point) VALUES (?, ?)");
+        return conn.prepareStatement("INSERT INTO " + tableName
+            + " (UUID, Point) VALUES (?, ?) ON DUPLICATE KEY UPDATE Point = ?");
     }
 }

@@ -1,4 +1,4 @@
-package net.teamuni.rankpoint;
+package net.utory.rankpoint;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -7,11 +7,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
-import net.teamuni.rankpoint.data.DatabaseManager;
-import net.teamuni.rankpoint.data.PlayerDataManager;
-import net.teamuni.rankpoint.data.PlayerDataManager.PlayerListener;
-import net.teamuni.rankpoint.data.database.Mysql;
-import net.teamuni.rankpoint.data.database.Sqlite;
+import net.utory.rankpoint.data.DatabaseManager;
+import net.utory.rankpoint.data.PlayerDataManager;
+import net.utory.rankpoint.data.PlayerDataManager.PlayerListener;
+import net.utory.rankpoint.data.database.Mysql;
+import net.utory.rankpoint.data.database.Sqlite;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;

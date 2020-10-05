@@ -1,4 +1,4 @@
-package net.teamuni.rankpoint;
+package net.utory.rankpoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
-import net.teamuni.rankpoint.data.PlayerDataManager;
-import net.teamuni.rankpoint.data.PlayerDataManager.PlayerData;
+import net.utory.rankpoint.data.PlayerDataManager;
+import net.utory.rankpoint.data.PlayerDataManager.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;

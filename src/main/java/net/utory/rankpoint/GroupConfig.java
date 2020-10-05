@@ -1,9 +1,9 @@
-package net.teamuni.rankpoint;
+package net.utory.rankpoint;
 
 import java.util.Collections;
 import java.util.List;
 import net.milkbowl.vault.permission.Permission;
-import net.teamuni.rankpoint.data.PlayerDataManager;
+import net.utory.rankpoint.data.PlayerDataManager;
 import org.bukkit.entity.Player;
 
 public final class GroupConfig {

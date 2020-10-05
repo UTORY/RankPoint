@@ -1,11 +1,11 @@
-package net.teamuni.rankpoint.data;
+package net.utory.rankpoint.data;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import net.teamuni.rankpoint.GroupConfig;
-import net.teamuni.rankpoint.Rankpoint;
+import net.utory.rankpoint.GroupConfig;
+import net.utory.rankpoint.Rankpoint;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

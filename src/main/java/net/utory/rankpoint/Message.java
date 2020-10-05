@@ -1,4 +1,4 @@
-package net.teamuni.rankpoint;
+package net.utory.rankpoint;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.yaml.snakeyaml.error.YAMLException;

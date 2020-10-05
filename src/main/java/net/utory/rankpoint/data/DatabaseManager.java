@@ -1,4 +1,4 @@
-package net.teamuni.rankpoint.data;
+package net.utory.rankpoint.data;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import net.teamuni.rankpoint.data.database.Database;
+import net.utory.rankpoint.data.database.Database;
 
 public final class DatabaseManager {
 

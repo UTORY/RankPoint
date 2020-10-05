@@ -1,4 +1,4 @@
-package net.teamuni.rankpoint.data.database;
+package net.utory.rankpoint.data.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

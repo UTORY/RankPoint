@@ -1,44 +1,32 @@
-package net.teamuni.rankpoint.data.database;
+package net.utory.rankpoint.data.database;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Mysql implements Database {
+public final class Sqlite implements Database {
 
     static {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException ignored) {
         }
     }
 
-    private final String hostName;
-    private final int port;
-    private final String database;
-    private final String parameters;
     private final String tableName;
-    private final String userName;
-    private final String password;
+    private final String dbFile;
 
-    public Mysql(String hostName, int port, String database, String parameters, String tableName,
-        String userName, String password) {
-        this.hostName = hostName;
-        this.port = port;
-        this.database = database;
-        this.parameters = parameters;
+    public Sqlite(String tableName, File dbFile) {
         this.tableName = tableName;
-        this.userName = userName;
-        this.password = password;
+        this.dbFile = dbFile.getPath();
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        return DriverManager
-            .getConnection(("jdbc:mysql://" + hostName + ":" + port + "/" + database + parameters),
-                userName, password);
+        return DriverManager.getConnection("jdbc:sqlite:" + dbFile);
     }
 
     @Override
@@ -56,7 +44,7 @@ public class Mysql implements Database {
 
     @Override
     public PreparedStatement getInsertStatement(Connection conn) throws SQLException {
-        return conn.prepareStatement("INSERT INTO " + tableName
-            + " (UUID, Point) VALUES (?, ?) ON DUPLICATE KEY UPDATE Point = ?");
+        return conn.prepareStatement(
+            "INSERT OR REPLACE INTO " + tableName + " (UUID, Point) VALUES (?, ?)");
     }
 }
