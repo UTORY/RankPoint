@@ -44,11 +44,18 @@ public final class GroupConfig {
     public int findGroup(int point) {
         int n = 0;
         for (int cond : this.pointConditions) {
-            if (point <= cond) {
+            if (point < cond) {
                 return n;
             }
             n++;
         }
         return n - 1;
+    }
+
+    public int getPrretyPoint(int point) {
+        if (pointConditions.get(0) > point) {
+            return point;
+        }
+        return point - pointConditions.get(findGroup(point) - 1);
     }
 }

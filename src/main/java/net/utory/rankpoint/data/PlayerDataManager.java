@@ -89,14 +89,17 @@ public final class PlayerDataManager {
 
     public static final class PlayerData {
 
-        private final Rankpoint instance = Rankpoint.getPlugin(Rankpoint.class);
+        private static final Rankpoint instance = Rankpoint.getPlugin(Rankpoint.class);
+
         private final UUID uuid;
         private int point;
+        private int prettyPoint;
         private boolean isChanged = false;
 
         private PlayerData(UUID uuid, int point) {
             this.uuid = uuid;
             this.point = point;
+            updatePrettyPoint();
         }
 
         public int getPoint() {
@@ -111,6 +114,7 @@ public final class PlayerDataManager {
             int oldPoint = this.point;
             this.point = point;
             isChanged = true;
+            updatePrettyPoint();
             checkRank(oldPoint);
         }
 
@@ -122,6 +126,7 @@ public final class PlayerDataManager {
             int oldPoint = this.point;
             this.point += point;
             isChanged = true;
+            updatePrettyPoint();
             checkRank(oldPoint);
         }
 
@@ -133,11 +138,16 @@ public final class PlayerDataManager {
             int oldPoint = this.point;
             this.point -= point;
             isChanged = true;
+            updatePrettyPoint();
             checkRank(oldPoint);
         }
 
+        public int getPrettyPoint() {
+            return prettyPoint;
+        }
+
         private void checkRank(int oldPoint) {
-            if (Bukkit.getPlayer(uuid) != null) {
+            if (Bukkit.getPlayer(uuid) == null) {
                 return;
             }
 
@@ -146,6 +156,12 @@ public final class PlayerDataManager {
             if (groupConfig.findGroup(oldPoint) != groupConfig.findGroup(point)) {
                 groupConfig.updatePlayerRank(Bukkit.getPlayer(uuid));
             }
+        }
+
+        private void updatePrettyPoint() {
+            GroupConfig groupConfig = instance.getGroupConfig();
+
+            prettyPoint = groupConfig.getPrretyPoint(point);
         }
     }
 

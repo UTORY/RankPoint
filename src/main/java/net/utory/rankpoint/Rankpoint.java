@@ -84,15 +84,19 @@ public final class Rankpoint extends JavaPlugin {
             getLogger().severe("config의 groups 설정을 불러오는데 실패했습니다.");
             return false;
         }
+        List<String> allGroups = Arrays.asList(perms.getGroups());
         List<String> groupNames = new ArrayList<>();
         List<Integer> pointConditions = new ArrayList<>();
+        // 람다에서는 final 변수만 접근 가능
+        final int[] latest = {0};
         groups.getKeys(false).stream().mapToInt(Integer::parseInt).sorted()
             .mapToObj(String::valueOf).map(groups::getConfigurationSection).filter(Objects::nonNull)
             .forEach(section -> {
                 String groupName = section.getString("group").toLowerCase();
-                if (Arrays.asList(perms.getGroups()).contains(groupName)) {
+                if (allGroups.contains(groupName)) {
                     groupNames.add(groupName);
-                    pointConditions.add(section.getInt("point"));
+                    latest[0] += section.getInt("point");
+                    pointConditions.add(latest[0]);
                 } else {
                     getLogger().severe(groupName + " 는(은) 없는 그룹입니다.");
                 }

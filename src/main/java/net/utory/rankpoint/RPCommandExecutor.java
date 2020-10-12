@@ -36,14 +36,14 @@ public final class RPCommandExecutor implements TabExecutor {
                 case "me":
                     if (senderIsPlayer) {
                         loadAndRun(((Player) sender).getUniqueId(),
-                            data -> sender.sendMessage(msg.getMsg("command.me", data.getPoint())));
+                            data -> sender.sendMessage(msg.getMsg("command.me", data.getPrettyPoint())));
                     }
                     break;
                 case "look":
                     if (args.length == 2 && checkPlayerName(args[1])) {
                         loadAndRun(args[1], (data, player) -> sender
                             .sendMessage(
-                                msg.getMsg("command.look", player.getName(), data.getPoint())));
+                                msg.getMsg("command.look", player.getName(), data.getPrettyPoint())));
                         return true;
                     }
                     sender.sendMessage(msg.getMsg("command.help.look"));
