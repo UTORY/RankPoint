@@ -17,6 +17,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -55,7 +56,13 @@ public final class Rankpoint extends JavaPlugin {
     public boolean configReload() {
         Bukkit.getScheduler().cancelTasks(this);
         playerDataManager.close();
-        return setupConfig() && setupDatabase();
+        if (setupConfig() && setupDatabase()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                getPlayerDataManager().loadPlayerData(player.getUniqueId());
+            }
+            return true;
+        }
+        return false;
     }
 
     private boolean setupPermission() {
