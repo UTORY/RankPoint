@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import net.milkbowl.vault.permission.Permission;
 import net.utory.rankpoint.data.PlayerDataManager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class GroupConfig {
@@ -42,20 +43,23 @@ public final class GroupConfig {
     }
 
     public int findGroup(int point) {
-        int n = 0;
+        if (point == 0) {
+            return 0;
+        }
+        int n = -1;
         for (int cond : this.pointConditions) {
-            if (point < cond) {
+            if (cond != 0 && point < cond) {
                 return n;
             }
             n++;
         }
-        return n - 1;
+        return n;
     }
 
     public int getPrretyPoint(int point) {
-        if (pointConditions.get(0) > point) {
+        if (point == 0 || point < pointConditions.get(0)) {
             return point;
         }
-        return point - pointConditions.get(findGroup(point) - 1);
+        return point - pointConditions.get(findGroup(point));
     }
 }
