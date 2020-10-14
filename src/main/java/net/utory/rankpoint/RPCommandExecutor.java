@@ -36,29 +36,34 @@ public final class RPCommandExecutor implements TabExecutor {
                 case "me":
                     if (senderIsPlayer) {
                         loadAndRun(((Player) sender).getUniqueId(),
-                            data -> sender.sendMessage(msg.getMsg("command.me", data.getPrettyPoint())));
+                            data -> sender
+                                .sendMessage(msg.getMsg("command.me", data.getPrettyPoint())));
                     }
                     break;
                 case "look":
                     if (args.length == 2 && checkPlayerName(args[1])) {
                         loadAndRun(args[1], (data, player) -> sender
                             .sendMessage(
-                                msg.getMsg("command.look", player.getName(), data.getPrettyPoint())));
+                                msg.getMsg("command.look", player.getName(),
+                                    data.getPrettyPoint())));
                         return true;
                     }
                     sender.sendMessage(msg.getMsg("command.help.look"));
                     break;
                 case "give":
                     if (senderHasPerm) {
-                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(args[2])) {
+                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(
+                            args[2])) {
                             int point = Integer.parseInt(args[2]);
                             loadAndRun(args[1], (data, player) -> {
                                 data.addPoint(point);
                                 sender.sendMessage(
                                     msg.getMsg("command.give.sender", player.getName(), point));
-                                if (player.isOnline() && !sender.getName().equals(player.getName())) {
+                                if (player.isOnline() && !sender.getName()
+                                    .equals(player.getName())) {
                                     ((Player) player).sendMessage(
-                                        msg.getMsg("command.give.receiver", sender.getName(), point));
+                                        msg.getMsg("command.give.receiver", sender.getName(),
+                                            point));
                                 }
                             });
                             return true;
@@ -85,7 +90,8 @@ public final class RPCommandExecutor implements TabExecutor {
                     break;
                 case "take":
                     if (senderHasPerm) {
-                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(args[2])) {
+                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(
+                            args[2])) {
                             int point = Integer.parseInt(args[2]);
                             loadAndRun(args[1], (data, player) -> {
                                 if (data.getPoint() - point < 0) {
@@ -95,9 +101,11 @@ public final class RPCommandExecutor implements TabExecutor {
                                 }
                                 sender.sendMessage(
                                     msg.getMsg("command.take.sender", player.getName(), point));
-                                if (player.isOnline() && !sender.getName().equals(player.getName())) {
+                                if (player.isOnline() && !sender.getName()
+                                    .equals(player.getName())) {
                                     ((Player) player).sendMessage(
-                                        msg.getMsg("command.take.receiver", sender.getName(), point));
+                                        msg.getMsg("command.take.receiver", sender.getName(),
+                                            point));
                                 }
                             });
                             return true;
@@ -109,15 +117,18 @@ public final class RPCommandExecutor implements TabExecutor {
                     break;
                 case "set":
                     if (senderHasPerm) {
-                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(args[2])) {
+                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(
+                            args[2])) {
                             int point = Integer.parseInt(args[2]);
                             loadAndRun(args[1], (data, player) -> {
                                 data.setPoint(point);
                                 sender.sendMessage(
                                     msg.getMsg("command.set.sender", player.getName(), point));
-                                if (player.isOnline() && !sender.getName().equals(player.getName())) {
+                                if (player.isOnline() && !sender.getName()
+                                    .equals(player.getName())) {
                                     ((Player) player).sendMessage(
-                                        msg.getMsg("command.set.receiver", sender.getName(), point));
+                                        msg.getMsg("command.set.receiver", sender.getName(),
+                                            point));
                                 }
                             });
                             return true;
@@ -134,7 +145,8 @@ public final class RPCommandExecutor implements TabExecutor {
                                 data.setPoint(0);
                                 sender.sendMessage(
                                     msg.getMsg("command.reset.sender", player.getName()));
-                                if (player.isOnline() && !sender.getName().equals(player.getName())) {
+                                if (player.isOnline() && !sender.getName()
+                                    .equals(player.getName())) {
                                     ((Player) player).sendMessage(
                                         msg.getMsg("command.reset.receiver", sender.getName()));
                                 }
@@ -200,7 +212,10 @@ public final class RPCommandExecutor implements TabExecutor {
                 case "look":
                     list = null;
                     break;
-                case "give": case "take": case "set": case "reset":
+                case "give":
+                case "take":
+                case "set":
+                case "reset":
                     if (sender.hasPermission("rankpoint.admin")) {
                         list = null;
                     }
@@ -229,13 +244,7 @@ public final class RPCommandExecutor implements TabExecutor {
 
     private void loadAndRun(UUID uuid, Consumer<PlayerData> consumer) {
         PlayerDataManager dataManager = instance.getPlayerDataManager();
-        if (dataManager.isLoaded(uuid)) {
-            consumer.accept(dataManager.getPlayerData(uuid));
-        } else {
-            dataManager.loadPlayerData(uuid);
-            consumer.accept(dataManager.getPlayerData(uuid));
-            dataManager.unloadPlayerData(uuid);
-        }
+        dataManager.usePlayerData(uuid, consumer);
     }
 
     @SuppressWarnings("deprecation")
@@ -243,12 +252,14 @@ public final class RPCommandExecutor implements TabExecutor {
         PlayerDataManager dataManager = instance.getPlayerDataManager();
         Player p = Bukkit.getPlayerExact(name);
         if (p != null) {
-            consumer.accept(dataManager.getPlayerData(p.getUniqueId()), p);
+            dataManager.usePlayerData(p.getUniqueId(), (data) -> {
+                consumer.accept(data, p);
+            });
         } else {
-            CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(name)).thenAccept(
-                player -> Bukkit.getScheduler().runTask(instance,
-                    () -> consumer
-                        .accept(dataManager.getPlayerData(player.getUniqueId()), player)));
+            CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(name))
+                .thenAccept(player -> Bukkit.getScheduler().runTask(instance,
+                    () -> dataManager.usePlayerData(player.getUniqueId(),
+                        (data) -> consumer.accept(data, player))));
         }
     }
 }

@@ -3,8 +3,6 @@ package net.utory.rankpoint;
 import java.util.Collections;
 import java.util.List;
 import net.milkbowl.vault.permission.Permission;
-import net.utory.rankpoint.data.PlayerDataManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class GroupConfig {
@@ -24,11 +22,8 @@ public final class GroupConfig {
         }
     }
 
-    public void updatePlayerRank(Player player) {
-        PlayerDataManager playerDataManager = instance.getPlayerDataManager();
+    public void updatePlayerRank(Player player, int point) {
         Permission permission = instance.getPermission();
-
-        int point = playerDataManager.getPlayerData(player.getUniqueId()).getPoint();
         String groupName = groupNames.get(findGroup(point));
 
         for (String s : permission.getPlayerGroups(null, player)) {
