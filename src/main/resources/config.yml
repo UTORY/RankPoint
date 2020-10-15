@@ -1,3 +1,5 @@
+broadcast_rankup: true
+
 player-data:
   storage: sqlite
   save-interval: 300
