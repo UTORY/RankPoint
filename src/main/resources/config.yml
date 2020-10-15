@@ -17,13 +17,13 @@ player-data:
 groups:
   1:
     group: Newbie
-    point: 10 # 포인트 0부터 10까지는 Newbie
+    point: 0 # 맨 처음 접속했을때 설정되는 그룹
   2:
     group: User
-    point: 50 # 포인트 11부터 50까지는 User
+    point: 50 # Newbie 그룹에서 50포인트 획득시 User 로 진급
   3:
     group: VIP1
     point: 100 # -
   4:
     group: VIP2
-    point: -1 # 101 부터 VIP2 (마지막은 무슨숫자든 제한 X)
+    point: 200 # VIP1 그룹에서 200 포인트 획득 시 VIP2 로 진급 (VIP2에서부터는 무슨숫자든 진급 X)
