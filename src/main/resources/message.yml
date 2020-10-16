@@ -1,3 +1,6 @@
+broadcast:
+  rankup: "<player>님이 <rank>로 진급하셨습니다!." # 랭크: <rank>, 플레이어의 닉네임: <player>
+
 command:
   donthaveperm: "&c당신은 권한이 없습니다!"
   unknownarg: "&c알 수 없는 인자입니다."

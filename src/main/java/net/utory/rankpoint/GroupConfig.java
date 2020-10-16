@@ -3,7 +3,7 @@ package net.utory.rankpoint;
 import java.util.Collections;
 import java.util.List;
 import net.milkbowl.vault.permission.Permission;
-import net.utory.rankpoint.data.PlayerDataManager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public final class GroupConfig {
@@ -23,11 +23,12 @@ public final class GroupConfig {
         }
     }
 
-    public void updatePlayerRank(Player player) {
-        PlayerDataManager playerDataManager = instance.getPlayerDataManager();
-        Permission permission = instance.getPermission();
+    public void updatePlayerRank(Player player, int point) {
+        if (!player.isOnline()) {
+            return;
+        }
 
-        int point = playerDataManager.getPlayerData(player.getUniqueId()).getPoint();
+        Permission permission = instance.getPermission();
         String groupName = groupNames.get(findGroup(point));
 
         for (String s : permission.getPlayerGroups(null, player)) {
@@ -38,17 +39,29 @@ public final class GroupConfig {
 
         if (!permission.playerInGroup(null, player, groupName)) {
             permission.playerAddGroup(null, player, groupName);
+            Message msg = instance.getMessage();
+            Bukkit.broadcastMessage(msg.getMsg("broadcast.rankup", player.getName(), groupName));
         }
     }
 
     public int findGroup(int point) {
-        int n = 0;
+        if (point == 0) {
+            return 0;
+        }
+        int n = -1;
         for (int cond : this.pointConditions) {
-            if (point <= cond) {
+            if (cond != 0 && point < cond) {
                 return n;
             }
             n++;
         }
-        return n - 1;
+        return n;
+    }
+
+    public int getPrretyPoint(int point) {
+        if (point == 0 || point < pointConditions.get(0)) {
+            return point;
+        }
+        return point - pointConditions.get(findGroup(point));
     }
 }
