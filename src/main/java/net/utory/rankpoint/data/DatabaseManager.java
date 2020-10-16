@@ -4,11 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import net.utory.rankpoint.data.database.Database;
 
 public final class DatabaseManager {
@@ -26,37 +27,34 @@ public final class DatabaseManager {
         this.insertPoint = database.getInsertStatement(conn);
     }
 
-    public int loadPoint(UUID uuid) {
-        try {
-            return executor.submit(() -> {
-                try {
-                    selectPoint.setString(1, uuid.toString());
-                    ResultSet rs = selectPoint.executeQuery();
-                    int r = 0;
-                    if (rs.next()) {
-                        r = rs.getInt(1);
-                    }
-                    rs.close();
-                    return r;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    return 0;
-                }
-            }).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    public void savePoint(UUID uuid, int point) {
+    public void loadPoint(UUID uuid, Consumer<Integer> consumer) {
         executor.execute(() -> {
             try {
-                insertPoint.setString(1, uuid.toString());
-                insertPoint.setInt(2, point);
-                insertPoint.executeUpdate();
+                selectPoint.setString(1, uuid.toString());
+                ResultSet rs = selectPoint.executeQuery();
+                int r = 0;
+                if (rs.next()) {
+                    r = rs.getInt(1);
+                }
+                rs.close();
+                consumer.accept(r);
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void savePoint(Map<UUID, Integer> points) {
+        executor.execute(() -> {
+            try {
+                for (Map.Entry<UUID, Integer> entry : points.entrySet()) {
+                    insertPoint.setString(1, entry.getKey().toString());
+                    insertPoint.setInt(2, entry.getValue());
+                    insertPoint.addBatch();
+                }
+                insertPoint.executeBatch();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         });
     }
