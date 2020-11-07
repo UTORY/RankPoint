@@ -1,9 +1,12 @@
 package net.utory.rankpoint;
 
+import static net.utory.rankpoint.Message.broadcastMessage;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
+import net.utory.rankpoint.data.PlayerDataManager.PlayerData;
 import org.bukkit.entity.Player;
 
 public final class GroupConfig {
@@ -11,11 +14,14 @@ public final class GroupConfig {
     private final Rankpoint instance;
     private final List<String> groupNames;
     private final List<Integer> pointConditions;
+    private final Map<String, String> displayGroupNamesMap;
 
-    GroupConfig(Rankpoint instance, List<String> groupNames, List<Integer> pointConditions) {
+    GroupConfig(Rankpoint instance, List<String> groupNames, List<Integer> pointConditions,
+        Map<String, String> displayGroupNamesMap) {
         this.instance = instance;
         this.groupNames = Collections.unmodifiableList(groupNames);
         this.pointConditions = Collections.unmodifiableList(pointConditions);
+        this.displayGroupNamesMap = displayGroupNamesMap;
         if (this.groupNames.size() != this.pointConditions.size()) {
             throw new IllegalArgumentException(
                 "The number of group names and the number of point conditions cannot be different. group names size: "
@@ -23,13 +29,13 @@ public final class GroupConfig {
         }
     }
 
-    public void updatePlayerRank(Player player, int point) {
+    public void updatePlayerRank(Player player, PlayerData playerData) {
         if (!player.isOnline()) {
             return;
         }
 
         Permission permission = instance.getPermission();
-        String groupName = groupNames.get(findGroup(point));
+        String groupName = groupNames.get(playerData.getGroupInt());
 
         for (String s : permission.getPlayerGroups(null, player)) {
             if (groupNames.contains(s) && !s.equals(groupName)) {
@@ -40,7 +46,7 @@ public final class GroupConfig {
         if (!permission.playerInGroup(null, player, groupName)) {
             permission.playerAddGroup(null, player, groupName);
             Message msg = instance.getMessage();
-            Bukkit.broadcastMessage(msg.getMsg("broadcast.rankup", player.getName(), groupName));
+            broadcastMessage(msg.BroadcastRankup(), null, player.getName(), playerData, null);
         }
     }
 
@@ -58,10 +64,22 @@ public final class GroupConfig {
         return n;
     }
 
+    public String getGroupName(int group) {
+        return displayGroupNamesMap.get(groupNames.get(group));
+    }
+
     public int getPrretyPoint(int point) {
         if (point == 0 || point < pointConditions.get(0)) {
             return point;
         }
         return point - pointConditions.get(findGroup(point));
+    }
+
+    public int getTotalPoint(int group) {
+        return pointConditions.get(group + 1) - pointConditions.get(group);
+    }
+
+    public int getNeedPoint(int group, int point) {
+        return pointConditions.get(group + 1) - point;
     }
 }
