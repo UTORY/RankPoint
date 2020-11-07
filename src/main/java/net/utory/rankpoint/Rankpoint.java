@@ -4,7 +4,9 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
 import net.utory.rankpoint.data.DatabaseManager;
@@ -82,7 +84,8 @@ public final class Rankpoint extends JavaPlugin {
         if (!msgConf.exists()) {
             saveResource("message.yml", false);
         }
-        message = new Message(YamlConfiguration.loadConfiguration(msgConf));
+        message = new Message();
+        message.loadMessages(YamlConfiguration.loadConfiguration(msgConf));
         ConfigurationSection groups = getConfig().getConfigurationSection("groups");
         if (groups == null) {
             getLogger().severe("config의 groups 설정을 불러오는데 실패했습니다.");
@@ -91,6 +94,7 @@ public final class Rankpoint extends JavaPlugin {
         List<String> allGroups = Arrays.asList(perms.getGroups());
         List<String> groupNames = new ArrayList<>();
         List<Integer> pointConditions = new ArrayList<>();
+        Map<String, String> displayGroupNamesMap = new HashMap<>();
         // 람다에서는 final 변수만 접근 가능
         final int[] latest = {0};
         groups.getKeys(false).stream().mapToInt(Integer::parseInt).sorted()
@@ -99,6 +103,7 @@ public final class Rankpoint extends JavaPlugin {
                 String groupName = section.getString("group").toLowerCase();
                 if (allGroups.contains(groupName)) {
                     groupNames.add(groupName);
+                    displayGroupNamesMap.put(groupName, section.getString("group"));
                     latest[0] += section.getInt("point");
                     pointConditions.add(latest[0]);
                 } else {
@@ -108,7 +113,7 @@ public final class Rankpoint extends JavaPlugin {
         if (groupNames.isEmpty() || pointConditions.isEmpty()) {
             return false;
         }
-        groupConfig = new GroupConfig(this, groupNames, pointConditions);
+        groupConfig = new GroupConfig(this, groupNames, pointConditions, displayGroupNamesMap);
         return true;
     }
 
