@@ -27,7 +27,14 @@ repositories {
 dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.4-R0.1-SNAPSHOT'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
-    compile 'org.xerial:sqlite-jdbc:3.32.3.2'
+    runtimeOnly 'org.xerial:sqlite-jdbc:3.32.3.2'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.22'
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 processResources {
