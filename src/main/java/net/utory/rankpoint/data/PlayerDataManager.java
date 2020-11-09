@@ -151,7 +151,9 @@ public final class PlayerDataManager {
                 throw new IllegalArgumentException(
                     "point cannot be less than 0 (point: " + point + ")");
             }
-            this.point += point;
+            try {
+                this.point = Math.addExact(this.point, point);
+            } catch (ArithmeticException ignored) { }
             isChanged = true;
             update();
         }
