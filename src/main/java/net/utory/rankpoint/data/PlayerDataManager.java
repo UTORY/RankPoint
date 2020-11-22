@@ -63,6 +63,10 @@ public final class PlayerDataManager {
         }
     }
 
+    public PlayerData getPlayerDataOrNull(UUID uuid) {
+        return playerDataMap.getOrDefault(uuid, null);
+    }
+
     public void saveAllData() {
         if (playerDataMap.isEmpty()) {
             return;
