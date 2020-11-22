@@ -5,6 +5,7 @@ api-version: 1.16
 website: www.teamuni.net
 author: UTORY
 depend: [Vault]
+softdepend: [PlaceholderAPI]
 
 commands:
   rankpoint:

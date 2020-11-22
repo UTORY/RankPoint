@@ -14,6 +14,7 @@ import net.utory.rankpoint.data.PlayerDataManager;
 import net.utory.rankpoint.data.PlayerDataManager.PlayerListener;
 import net.utory.rankpoint.data.database.Mysql;
 import net.utory.rankpoint.data.database.Sqlite;
+import net.utory.rankpoint.placeholderapi.RankpointExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
@@ -45,6 +46,10 @@ public final class Rankpoint extends JavaPlugin {
         if (!setupDatabase()) {
             getLogger().severe("데이터베이스에 연결할 수 없습니다.");
             getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        if (setupPlaceholders()) {
+            getLogger().severe("Placeholder API와 연결되었습니다.");
             return;
         }
         PluginCommand command = getCommand("rankpoint");
@@ -156,6 +161,13 @@ public final class Rankpoint extends JavaPlugin {
             .runTaskTimer(this, playerDataManager::saveAllData, saveInterval * 20,
                 saveInterval * 20);
         return true;
+    }
+
+    private boolean setupPlaceholders() {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            return new RankpointExpansion(this).register();
+        }
+        return false;
     }
 
     @Override
