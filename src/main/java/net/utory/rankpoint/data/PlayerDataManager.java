@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Consumer;
 import net.utory.rankpoint.GroupConfig;
+import net.utory.rankpoint.Message;
 import net.utory.rankpoint.Rankpoint;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -126,8 +127,8 @@ public final class PlayerDataManager {
         private int group = -1;
         private String displayGroupName;
         private int prettyPoint;
-        private int totalPoint;
-        private int needPoint;
+        private String totalPoint;
+        private String needPoint;
         private boolean isChanged = false;
 
         private PlayerData(UUID uuid, int point) {
@@ -174,14 +175,17 @@ public final class PlayerDataManager {
 
         private void update() {
             GroupConfig groupConfig = instance.getGroupConfig();
+            Message message = instance.getMessage();
 
             int oldGroup = group;
             group = groupConfig.findGroup(point);
             displayGroupName = groupConfig.getGroupName(group);
 
             prettyPoint = groupConfig.getPrretyPoint(point);
-            totalPoint = groupConfig.getTotalPoint(group);
-            needPoint = groupConfig.getNeedPoint(group, point);
+            int tmp = groupConfig.getTotalPoint(group);
+            totalPoint = tmp == -1 ? message.RankMaxTotalPoint() : tmp + "";
+            tmp = groupConfig.getNeedPoint(group, point);
+            needPoint = tmp == -1 ? message.RankMaxNeedPoint() : tmp + "";
 
             if (group != -1 && oldGroup != group) {
                 Player p = Bukkit.getPlayer(uuid);
@@ -195,11 +199,11 @@ public final class PlayerDataManager {
             return prettyPoint;
         }
 
-        public int getTotalPoint() {
+        public String getTotalPoint() {
             return totalPoint;
         }
 
-        public int getNeedPoint() {
+        public String getNeedPoint() {
             return needPoint;
         }
 

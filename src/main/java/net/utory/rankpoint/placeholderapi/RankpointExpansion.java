@@ -42,11 +42,11 @@ public class RankpointExpansion extends PlaceholderExpansion {
         switch (identifier) {
             case "needpoint": {
                 PlayerData data = playerDataManager.getPlayerDataOrNull(uuid);
-                return data == null ? null : data.getNeedPoint() + "";
+                return data == null ? null : data.getNeedPoint();
             }
             case "totalpoint": {
                 PlayerData data = playerDataManager.getPlayerDataOrNull(uuid);
-                return data == null ? null : data.getTotalPoint() + "";
+                return data == null ? null : data.getTotalPoint();
             }
             case "point": {
                 PlayerData data = playerDataManager.getPlayerDataOrNull(uuid);
