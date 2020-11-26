@@ -63,6 +63,10 @@ public final class PlayerDataManager {
         }
     }
 
+    public PlayerData getPlayerDataOrNull(UUID uuid) {
+        return playerDataMap.getOrDefault(uuid, null);
+    }
+
     public void saveAllData() {
         if (playerDataMap.isEmpty()) {
             return;
@@ -119,13 +123,17 @@ public final class PlayerDataManager {
 
         private final UUID uuid;
         private int point;
+        private int group = -1;
+        private String displayGroupName;
         private int prettyPoint;
+        private int totalPoint;
+        private int needPoint;
         private boolean isChanged = false;
 
         private PlayerData(UUID uuid, int point) {
             this.uuid = uuid;
             this.point = point;
-            updatePrettyPoint();
+            update();
         }
 
         public int getPoint() {
@@ -137,11 +145,9 @@ public final class PlayerDataManager {
                 throw new IllegalArgumentException(
                     "point cannot be less than 0 (point: " + point + ")");
             }
-            int oldPoint = this.point;
             this.point = point;
             isChanged = true;
-            updatePrettyPoint();
-            checkRank(oldPoint);
+            update();
         }
 
         public void addPoint(int point) {
@@ -149,11 +155,11 @@ public final class PlayerDataManager {
                 throw new IllegalArgumentException(
                     "point cannot be less than 0 (point: " + point + ")");
             }
-            int oldPoint = this.point;
-            this.point += point;
+            try {
+                this.point = Math.addExact(this.point, point);
+            } catch (ArithmeticException ignored) { }
             isChanged = true;
-            updatePrettyPoint();
-            checkRank(oldPoint);
+            update();
         }
 
         public void removePoint(int point) {
@@ -161,34 +167,48 @@ public final class PlayerDataManager {
                 throw new IllegalArgumentException(
                     "point cannot be less than 0 (point: " + (this.point - point) + ")");
             }
-            int oldPoint = this.point;
             this.point -= point;
             isChanged = true;
-            updatePrettyPoint();
-            checkRank(oldPoint);
+            update();
+        }
+
+        private void update() {
+            GroupConfig groupConfig = instance.getGroupConfig();
+
+            int oldGroup = group;
+            group = groupConfig.findGroup(point);
+            displayGroupName = groupConfig.getGroupName(group);
+
+            prettyPoint = groupConfig.getPrretyPoint(point);
+            totalPoint = groupConfig.getTotalPoint(group);
+            needPoint = groupConfig.getNeedPoint(group, point);
+
+            if (group != -1 && oldGroup != group) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (p != null) {
+                    groupConfig.updatePlayerRank(p, this);
+                }
+            }
         }
 
         public int getPrettyPoint() {
             return prettyPoint;
         }
 
-        private void checkRank(int oldPoint) {
-            Player p = Bukkit.getPlayer(uuid);
-            if (p == null) {
-                return;
-            }
-
-            GroupConfig groupConfig = instance.getGroupConfig();
-
-            if (groupConfig.findGroup(oldPoint) != groupConfig.findGroup(point)) {
-                groupConfig.updatePlayerRank(p, point);
-            }
+        public int getTotalPoint() {
+            return totalPoint;
         }
 
-        private void updatePrettyPoint() {
-            GroupConfig groupConfig = instance.getGroupConfig();
+        public int getNeedPoint() {
+            return needPoint;
+        }
 
-            prettyPoint = groupConfig.getPrretyPoint(point);
+        public int getGroupInt() {
+            return group;
+        }
+
+        public String getGroup() {
+            return displayGroupName;
         }
     }
 

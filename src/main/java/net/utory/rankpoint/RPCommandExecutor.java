@@ -1,5 +1,8 @@
 package net.utory.rankpoint;
 
+import static net.utory.rankpoint.Message.broadcastMessage;
+import static net.utory.rankpoint.Message.sendMessage;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,62 +39,59 @@ public final class RPCommandExecutor implements TabExecutor {
                 case "me":
                     if (senderIsPlayer) {
                         loadAndRun(((Player) sender).getUniqueId(),
-                            data -> sender
-                                .sendMessage(msg.getMsg("command.me", data.getPrettyPoint())));
+                            data -> sendMessage(sender, msg.CommandMe(), sender.getName(),
+                                sender.getName(), data, null));
                     }
                     break;
                 case "look":
                     if (args.length == 2 && checkPlayerName(args[1])) {
-                        loadAndRun(args[1], (data, player) -> sender
-                            .sendMessage(
-                                msg.getMsg("command.look", player.getName(),
-                                    data.getPrettyPoint())));
+                        loadAndRun(args[1], (data, player) ->
+                            sendMessage(sender, msg.CommandLook(), sender.getName(),
+                                player.getName(), data, null));
                         return true;
                     }
-                    sender.sendMessage(msg.getMsg("command.help.look"));
+                    sendMessage(sender, msg.CommandHelpLook());
                     break;
                 case "give":
                     if (senderHasPerm) {
-                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(
-                            args[2])) {
+                        if (args.length == 3 && checkPlayerName(args[1]) && checkInt(args[2])) {
                             int point = Integer.parseInt(args[2]);
                             loadAndRun(args[1], (data, player) -> {
                                 data.addPoint(point);
-                                sender.sendMessage(
-                                    msg.getMsg("command.give.sender", player.getName(), point));
+                                sendMessage(sender, msg.CommandGiveSender(), sender.getName(),
+                                    player.getName(), data, args[2]);
                                 if (player.isOnline() && !sender.getName()
                                     .equals(player.getName())) {
-                                    ((Player) player).sendMessage(
-                                        msg.getMsg("command.give.receiver", sender.getName(),
-                                            point));
+                                    sendMessage(((Player) player), msg.CommandGiveReceiver(),
+                                        sender.getName(), player.getName(), data, args[2]);
                                 }
                             });
                             return true;
                         }
-                        sender.sendMessage(msg.getMsg("command.help.give"));
+                        sender.sendMessage(msg.CommandHelpGive());
                     } else {
-                        sender.sendMessage(msg.getMsg("command.donthaveperm"));
+                        sender.sendMessage(msg.CommandDonthaveperm());
                     }
                     break;
                 case "giveall":
                     if (senderHasPerm) {
-                        if (args.length == 2 && isIntegerAndPositive(args[1])) {
+                        if (args.length == 2 && checkInt(args[1])) {
                             int point = Integer.parseInt(args[1]);
                             Bukkit.getOnlinePlayers().forEach(
                                 (player) -> loadAndRun(player.getUniqueId(),
                                     (data) -> data.addPoint(point)));
-                            Bukkit.broadcastMessage(msg.getMsg("command.giveall", point));
+                            broadcastMessage(msg.CommandGiveall(), sender.getName(), null, null,
+                                null);
                             return true;
                         }
-                        sender.sendMessage(msg.getMsg("command.help.giveall"));
+                        sendMessage(sender, msg.CommandHelpGiveall());
                     } else {
-                        sender.sendMessage(msg.getMsg("command.donthaveperm"));
+                        sendMessage(sender, msg.CommandDonthaveperm());
                     }
                     break;
                 case "take":
                     if (senderHasPerm) {
-                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(
-                            args[2])) {
+                        if (args.length == 3 && checkPlayerName(args[1]) && checkInt(args[2])) {
                             int point = Integer.parseInt(args[2]);
                             loadAndRun(args[1], (data, player) -> {
                                 if (data.getPoint() - point < 0) {
@@ -99,43 +99,40 @@ public final class RPCommandExecutor implements TabExecutor {
                                 } else {
                                     data.removePoint(point);
                                 }
-                                sender.sendMessage(
-                                    msg.getMsg("command.take.sender", player.getName(), point));
+                                sendMessage(sender, msg.CommandTakeSender(), sender.getName(),
+                                    player.getName(), data, args[2]);
                                 if (player.isOnline() && !sender.getName()
                                     .equals(player.getName())) {
-                                    ((Player) player).sendMessage(
-                                        msg.getMsg("command.take.receiver", sender.getName(),
-                                            point));
+                                    sendMessage(((Player) player), msg.CommandTakeReceiver(),
+                                        sender.getName(), player.getName(), data, args[2]);
                                 }
                             });
                             return true;
                         }
-                        sender.sendMessage(msg.getMsg("command.help.take"));
+                        sendMessage(sender, msg.CommandHelpTake());
                     } else {
-                        sender.sendMessage(msg.getMsg("command.donthaveperm"));
+                        sendMessage(sender, msg.CommandDonthaveperm());
                     }
                     break;
                 case "set":
                     if (senderHasPerm) {
-                        if (args.length == 3 && checkPlayerName(args[1]) && isIntegerAndPositive(
-                            args[2])) {
+                        if (args.length == 3 && checkPlayerName(args[1]) && checkInt(args[2])) {
                             int point = Integer.parseInt(args[2]);
                             loadAndRun(args[1], (data, player) -> {
                                 data.setPoint(point);
-                                sender.sendMessage(
-                                    msg.getMsg("command.set.sender", player.getName(), point));
+                                sendMessage(sender, msg.CommandSetSender(), sender.getName(),
+                                    player.getName(), data, args[2]);
                                 if (player.isOnline() && !sender.getName()
                                     .equals(player.getName())) {
-                                    ((Player) player).sendMessage(
-                                        msg.getMsg("command.set.receiver", sender.getName(),
-                                            point));
+                                    sendMessage(((Player) player), msg.CommandSetReceiver(),
+                                        sender.getName(), player.getName(), data, args[2]);
                                 }
                             });
                             return true;
                         }
-                        sender.sendMessage(msg.getMsg("command.help.set"));
+                        sendMessage(sender, msg.CommandHelpSet());
                     } else {
-                        sender.sendMessage(msg.getMsg("command.donthaveperm"));
+                        sendMessage(sender, msg.CommandDonthaveperm());
                     }
                     break;
                 case "reset":
@@ -143,48 +140,48 @@ public final class RPCommandExecutor implements TabExecutor {
                         if (args.length == 2 && checkPlayerName(args[1])) {
                             loadAndRun(args[1], (data, player) -> {
                                 data.setPoint(0);
-                                sender.sendMessage(
-                                    msg.getMsg("command.reset.sender", player.getName()));
+                                sendMessage(sender, msg.CommandResetSender(), sender.getName(),
+                                    player.getName(), data, null);
                                 if (player.isOnline() && !sender.getName()
                                     .equals(player.getName())) {
-                                    ((Player) player).sendMessage(
-                                        msg.getMsg("command.reset.receiver", sender.getName()));
+                                    sendMessage(((Player) player), msg.CommandResetReceiver(),
+                                        sender.getName(), player.getName(), data, null);
                                 }
                             });
                             return true;
                         }
-                        sender.sendMessage(msg.getMsg("command.help.reset"));
+                        sendMessage(sender, msg.CommandHelpReset());
                     } else {
-                        sender.sendMessage(msg.getMsg("command.donthaveperm"));
+                        sendMessage(sender, msg.CommandDonthaveperm());
                     }
                     break;
                 case "reload":
                     if (senderHasPerm) {
                         if (instance.configReload()) {
-                            sender.sendMessage(msg.getMsg("command.reload.success"));
+                            sendMessage(sender, msg.CommandReloadSuccess());
                         } else {
-                            sender.sendMessage(msg.getMsg("command.reload.failed"));
+                            sendMessage(sender, msg.CommandReloadFailed());
                         }
                     } else {
-                        sender.sendMessage(msg.getMsg("command.donthaveperm"));
+                        sendMessage(sender, msg.CommandDonthaveperm());
                     }
                     break;
                 default:
-                    sender.sendMessage(msg.getMsg("command.unknownarg"));
+                    sendMessage(sender, msg.CommandUnknownarg());
                     break;
             }
         } else {
             if (senderIsPlayer) {
-                sender.sendMessage(msg.getMsg("command.help.me"));
+                sendMessage(sender, msg.CommandHelpMe());
             }
-            sender.sendMessage(msg.getMsg("command.help.look"));
+            sendMessage(sender, msg.CommandHelpLook());
             if (senderHasPerm) {
-                sender.sendMessage(msg.getMsg("command.help.give"));
-                sender.sendMessage(msg.getMsg("command.help.giveall"));
-                sender.sendMessage(msg.getMsg("command.help.take"));
-                sender.sendMessage(msg.getMsg("command.help.set"));
-                sender.sendMessage(msg.getMsg("command.help.reset"));
-                sender.sendMessage(msg.getMsg("command.help.reload"));
+                sendMessage(sender, msg.CommandHelpGive());
+                sendMessage(sender, msg.CommandHelpGiveall());
+                sendMessage(sender, msg.CommandHelpTake());
+                sendMessage(sender, msg.CommandHelpSet());
+                sendMessage(sender, msg.CommandHelpReset());
+                sendMessage(sender, msg.CommandHelpReload());
             }
         }
         return true;
@@ -231,7 +228,7 @@ public final class RPCommandExecutor implements TabExecutor {
         return USERNAME_PATTERN.matcher(name).matches();
     }
 
-    private boolean isIntegerAndPositive(String st) {
+    private boolean checkInt(String st) {
         try {
             int i = Integer.parseInt(st);
             if (i > 0) {
