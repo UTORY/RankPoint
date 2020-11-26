@@ -49,8 +49,7 @@ public final class Rankpoint extends JavaPlugin {
             return;
         }
         if (setupPlaceholders()) {
-            getLogger().severe("Placeholder API와 연결되었습니다.");
-            return;
+            getLogger().info("Placeholder API와 연결되었습니다.");
         }
         PluginCommand command = getCommand("rankpoint");
         RPCommandExecutor executor = new RPCommandExecutor(this);
