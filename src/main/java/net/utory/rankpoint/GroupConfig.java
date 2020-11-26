@@ -76,10 +76,16 @@ public final class GroupConfig {
     }
 
     public int getTotalPoint(int group) {
+        if (pointConditions.size() == group + 1) {
+            return -1;
+        }
         return pointConditions.get(group + 1) - pointConditions.get(group);
     }
 
     public int getNeedPoint(int group, int point) {
+        if (pointConditions.size() == group + 1) {
+            return -1;
+        }
         return pointConditions.get(group + 1) - point;
     }
 }

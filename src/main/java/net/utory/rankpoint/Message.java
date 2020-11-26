@@ -9,6 +9,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Message {
 
     private String BROADCAST_RANKUP;
+    private String RANK_MAX_NEED_POINT;
+    private String RANK_MAX_TOTAL_POINT;
     private String COMMAND_DONTHAVEPERM;
     private String COMMAND_UNKNOWNARG;
     private String COMMAND_HELP_ME;
@@ -69,6 +71,8 @@ public class Message {
 
     public void loadMessages(FileConfiguration conf) {
         BROADCAST_RANKUP = getString(conf, "broadcast.rankup");
+        RANK_MAX_NEED_POINT = getString(conf, "rank-max.need-point");
+        RANK_MAX_TOTAL_POINT = getString(conf, "rank-max.total-point");
         COMMAND_DONTHAVEPERM = getString(conf, "command.donthaveperm");
         COMMAND_UNKNOWNARG = getString(conf, "command.unknownarg");
         COMMAND_HELP_ME = getString(conf, "command.help.me");
@@ -105,6 +109,14 @@ public class Message {
 
     public String BroadcastRankup() {
         return BROADCAST_RANKUP;
+    }
+
+    public String RankMaxNeedPoint() {
+        return RANK_MAX_NEED_POINT;
+    }
+
+    public String RankMaxTotalPoint() {
+        return RANK_MAX_TOTAL_POINT;
     }
 
     public String CommandDonthaveperm() {
