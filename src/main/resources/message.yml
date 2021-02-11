@@ -27,6 +27,7 @@ command:
     set: "&7/rankpoint set <name> <points> &6: 주어진 플레이어의 포인트를 설정합니다."
     reset: "&7/rankpoint reset <name> &6: 주어진 플레이어의 포인트를 0으로 재설정합니다."
     reload: "&7/rankpoint reload &6: 구성을 다시 로드합니다."
+    migrate: "&7/rankpoint migrate &6: 데이터베이스를 변경합니다. (주의: 데이터 양에 따라 시간이 걸릴 수 있습니다.)"
   me:
     - "&f당신의 랭크 포인트: &6<point>/<total_point>"
     - "&f다음 랭크까지 <need_point> 랭크 포인트가 필요합니다."
@@ -49,3 +50,4 @@ command:
   reload:
     success: "&a설정을 다시 불러오는데 성공하였습니다."
     failed: "&c설정을 다시 불러오는데 실패하였습니다."
+  migrate: "&aCONSOLE 을 확인해 결과를 확인하세요."

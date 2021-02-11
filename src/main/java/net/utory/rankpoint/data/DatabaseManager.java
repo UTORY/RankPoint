@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -16,10 +18,12 @@ public final class DatabaseManager {
 
     private final ExecutorService executor;
     private final Connection conn;
+    private final Database database;
     private final PreparedStatement selectPoint;
     private final PreparedStatement insertPoint;
 
     public DatabaseManager(Database database) throws SQLException {
+        this.database = database;
         this.executor = Executors.newSingleThreadExecutor();
         this.conn = database.getConnection();
         database.initTable(conn);
@@ -44,12 +48,31 @@ public final class DatabaseManager {
         });
     }
 
+    public void loadAllPoints(Consumer<Map<UUID, Integer>> consumer) {
+        executor.execute(() -> {
+            Map<UUID, Integer> map = new HashMap<>();
+            try (Statement statement = conn.createStatement();
+                ResultSet resultSet =
+                    statement.executeQuery("SELECT * FROM " + database.getTableName())) {
+                while (resultSet.next()) {
+                    map.put(UUID.fromString(resultSet.getString(1)), resultSet.getInt(2));
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            consumer.accept(map);
+        });
+    }
+
     public void savePoint(Map<UUID, Integer> points) {
         executor.execute(() -> {
             try {
                 for (Map.Entry<UUID, Integer> entry : points.entrySet()) {
                     insertPoint.setString(1, entry.getKey().toString());
                     insertPoint.setInt(2, entry.getValue());
+                    if (insertPoint.getParameterMetaData().getParameterCount() == 3) {
+                        insertPoint.setInt(3, entry.getValue());
+                    }
                     insertPoint.addBatch();
                 }
                 insertPoint.executeBatch();
@@ -62,7 +85,7 @@ public final class DatabaseManager {
     public void closeDatabase() {
         executor.shutdown();
         try {
-            if (!executor.awaitTermination(15, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
                 executor.shutdownNow();
             }
         } catch (InterruptedException ignored) {

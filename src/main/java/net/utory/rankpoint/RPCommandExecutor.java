@@ -166,6 +166,10 @@ public final class RPCommandExecutor implements TabExecutor {
                         sendMessage(sender, msg.CommandDonthaveperm());
                     }
                     break;
+                case "migrate":
+                    instance.migrate();
+                    sendMessage(sender, msg.CommandMigrate());
+                    break;
                 default:
                     sendMessage(sender, msg.CommandUnknownarg());
                     break;
@@ -182,6 +186,7 @@ public final class RPCommandExecutor implements TabExecutor {
                 sendMessage(sender, msg.CommandHelpSet());
                 sendMessage(sender, msg.CommandHelpReset());
                 sendMessage(sender, msg.CommandHelpReload());
+                sendMessage(sender, msg.CommandHelpMigrate());
             }
         }
         return true;
