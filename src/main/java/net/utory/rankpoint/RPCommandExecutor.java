@@ -4,9 +4,7 @@ import static net.utory.rankpoint.Message.broadcastMessage;
 import static net.utory.rankpoint.Message.sendMessage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
@@ -84,7 +82,7 @@ public final class RPCommandExecutor implements TabExecutor {
                                 (player) -> loadAndRun(player.getUniqueId(),
                                     (data) -> data.addPoint(point)));
                             broadcastMessage(msg.CommandGiveall(), sender.getName(), null, null,
-                                null);
+                                point + "");
                             return true;
                         }
                         sendMessage(sender, msg.CommandHelpGiveall());
@@ -196,7 +194,8 @@ public final class RPCommandExecutor implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias,
+        String[] args) {
         if (args.length == 2) {
             switch (args[0]) {
                 case "look":
@@ -234,7 +233,8 @@ public final class RPCommandExecutor implements TabExecutor {
         if (args.length == 0 || args[0].isEmpty()) {
             return list;
         } else {
-            return list.stream().filter(str -> str.startsWith(args[0])).collect(Collectors.toList());
+            return list.stream().filter(str -> str.startsWith(args[0]))
+                .collect(Collectors.toList());
         }
     }
 
