@@ -9,4 +9,5 @@ public interface Database {
     void initTable(Connection conn) throws SQLException;
     PreparedStatement getSelectStatement(Connection conn) throws SQLException;
     PreparedStatement getInsertStatement(Connection conn) throws SQLException;
+    String getTableName();
 }

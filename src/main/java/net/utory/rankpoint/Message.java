@@ -21,6 +21,7 @@ public class Message {
     private String COMMAND_HELP_SET;
     private String COMMAND_HELP_RESET;
     private String COMMAND_HELP_RELOAD;
+    private String COMMAND_HELP_MIGRATE;
     private String COMMAND_ME;
     private String COMMAND_LOOK;
     private String COMMAND_GIVE_SENDER;
@@ -34,6 +35,7 @@ public class Message {
     private String COMMAND_RESET_RECEIVER;
     private String COMMAND_RELOAD_SUCCESS;
     private String COMMAND_RELOAD_FAILED;
+    private String COMMAND_MIGRATE;
 
     public static void sendMessage(CommandSender sender, String str, String senderName, String receiver, PlayerData receiverData, String arg) {
         for (String s : format(str, senderName, receiver, receiverData, arg).split("\\\\n")) {
@@ -83,6 +85,7 @@ public class Message {
         COMMAND_HELP_SET = getString(conf, "command.help.set");
         COMMAND_HELP_RESET = getString(conf, "command.help.reset");
         COMMAND_HELP_RELOAD = getString(conf, "command.help.reload");
+        COMMAND_HELP_MIGRATE = getString(conf, "command.help.migrate");
         COMMAND_ME = getString(conf, "command.me");
         COMMAND_LOOK = getString(conf, "command.look");
         COMMAND_GIVE_SENDER = getString(conf, "command.give.sender");
@@ -96,6 +99,7 @@ public class Message {
         COMMAND_RESET_RECEIVER = getString(conf, "command.reset.receiver");
         COMMAND_RELOAD_SUCCESS = getString(conf, "command.reload.success");
         COMMAND_RELOAD_FAILED = getString(conf, "command.reload.failed");
+        COMMAND_MIGRATE = getString(conf, "command.migrate");
     }
 
     private String getString(FileConfiguration conf, String path) {
@@ -159,6 +163,10 @@ public class Message {
         return COMMAND_HELP_RELOAD;
     }
 
+    public String CommandHelpMigrate() {
+        return COMMAND_HELP_MIGRATE;
+    }
+
     public String CommandMe() {
         return COMMAND_ME;
     }
@@ -209,5 +217,9 @@ public class Message {
 
     public String CommandReloadFailed() {
         return COMMAND_RELOAD_FAILED;
+    }
+
+    public String CommandMigrate() {
+        return COMMAND_MIGRATE;
     }
 }

@@ -47,4 +47,9 @@ public final class Sqlite implements Database {
         return conn.prepareStatement(
             "INSERT OR REPLACE INTO " + tableName + " (UUID, Point) VALUES (?, ?)");
     }
+
+    @Override
+    public String getTableName() {
+        return tableName;
+    }
 }
