@@ -10,8 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import net.milkbowl.vault.permission.Permission;
 import net.utory.rankpoint.data.DatabaseManager;
+import net.utory.rankpoint.data.MigrateManager;
 import net.utory.rankpoint.data.PlayerDataManager;
 import net.utory.rankpoint.data.PlayerDataManager.PlayerListener;
+import net.utory.rankpoint.data.database.Database;
 import net.utory.rankpoint.data.database.Mysql;
 import net.utory.rankpoint.data.database.Sqlite;
 import net.utory.rankpoint.placeholderapi.RankpointExpansion;
@@ -62,6 +64,72 @@ public final class Rankpoint extends JavaPlugin {
         Bukkit.getScheduler().cancelTasks(this);
         playerDataManager.close();
         if (setupConfig() && setupDatabase()) {
+            playerDataManager.allPlayerDataLoad(Bukkit.getOnlinePlayers());
+            return true;
+        }
+        return false;
+    }
+
+    public void migrate() {
+        Bukkit.getScheduler().cancelTasks(this);
+        playerDataManager.close();
+        reloadConfig();
+        FileConfiguration cf = getConfig();
+        boolean isSqlite = cf.getString("player-data.storage", "sqlite").equalsIgnoreCase("sqlite");
+
+        String hostName = cf.getString("player-data.MySQL.hostname");
+        int port = cf.getInt("player-data.MySQL.port");
+        String databaseName = cf.getString("player-data.MySQL.database");
+        String tableNameMySQL = cf.getString("player-data.MySQL.tablename");
+        String parameters = cf.getString("player-data.MySQL.parameters");
+        String userName = cf.getString("player-data.MySQL.username");
+        String password = cf.getString("player-data.MySQL.password");
+
+        DatabaseManager mysql;
+        try {
+            mysql = new DatabaseManager(new Mysql(hostName, port, databaseName, parameters, tableNameMySQL,
+                userName, password));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            getLogger().severe("Mysql 데이터베이스에 연결을 실패했습니다.");
+            if (!migrateFinish()) {
+                getLogger().severe("데이터베이스를 리로드하는데 실패했습니다. 플러그인을 비활성화합니다.");
+                Bukkit.getPluginManager().disablePlugin(this);
+            }
+            return;
+        }
+
+        String tableName = cf.getString("player-data.SQLite.tablename");
+        File file = new File(cf.getString("player-data.SQLite.file"));
+
+        DatabaseManager sqlite;
+        try {
+            sqlite = new DatabaseManager(new Sqlite(tableName, file));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            getLogger().severe("Sqlite 데이터베이스에 연결을 실패했습니다.");
+            if (!migrateFinish()) {
+                getLogger().severe("데이터베이스를 리로드하는데 실패했습니다. 플러그인을 비활성화합니다.");
+                Bukkit.getPluginManager().disablePlugin(this);
+            }
+            return;
+        }
+
+        MigrateManager migrateManager;
+        if (isSqlite) {
+            migrateManager = new MigrateManager(mysql, sqlite);
+        } else {
+            migrateManager = new MigrateManager(sqlite, mysql);
+        }
+        migrateManager.migrate();
+        cf.set("player-data.storage", isSqlite ? "mysql" : "sqlite");
+        saveConfig();
+        migrateFinish();
+        getLogger().info("정상적으로 데이터베이스가 변경되었습니다.");
+    }
+
+    private boolean migrateFinish() {
+        if (setupDatabase()) {
             playerDataManager.allPlayerDataLoad(Bukkit.getOnlinePlayers());
             return true;
         }
@@ -172,7 +240,8 @@ public final class Rankpoint extends JavaPlugin {
     @Override
     public void onDisable() {
         Bukkit.getScheduler().cancelTasks(this);
-        playerDataManager.close();
+        if (playerDataManager != null)
+            playerDataManager.close();
     }
 
     public Permission getPermission() {

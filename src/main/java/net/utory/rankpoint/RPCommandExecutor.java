@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.utory.rankpoint.data.PlayerDataManager;
 import net.utory.rankpoint.data.PlayerDataManager.PlayerData;
 import org.bukkit.Bukkit;
@@ -81,7 +82,7 @@ public final class RPCommandExecutor implements TabExecutor {
                                 (player) -> loadAndRun(player.getUniqueId(),
                                     (data) -> data.addPoint(point)));
                             broadcastMessage(msg.CommandGiveall(), sender.getName(), null, null,
-                                null);
+                                point + "");
                             return true;
                         }
                         sendMessage(sender, msg.CommandHelpGiveall());
@@ -166,6 +167,10 @@ public final class RPCommandExecutor implements TabExecutor {
                         sendMessage(sender, msg.CommandDonthaveperm());
                     }
                     break;
+                case "migrate":
+                    instance.migrate();
+                    sendMessage(sender, msg.CommandMigrate());
+                    break;
                 default:
                     sendMessage(sender, msg.CommandUnknownarg());
                     break;
@@ -182,6 +187,7 @@ public final class RPCommandExecutor implements TabExecutor {
                 sendMessage(sender, msg.CommandHelpSet());
                 sendMessage(sender, msg.CommandHelpReset());
                 sendMessage(sender, msg.CommandHelpReload());
+                sendMessage(sender, msg.CommandHelpMigrate());
             }
         }
         return true;
@@ -190,38 +196,46 @@ public final class RPCommandExecutor implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias,
         String[] args) {
-        ArrayList<String> list = new ArrayList<>();
-        if (args.length == 0 || args[0].isEmpty()) {
-            if (sender instanceof Player) {
-                list.add("me");
-            }
-            list.add("look");
-            if (sender.hasPermission("rankpoint.admin")) {
-                list.add("give");
-                list.add("giveall");
-                list.add("take");
-                list.add("set");
-                list.add("reset");
-                list.add("reload");
-            }
-        } else if (args.length == 2) {
+        if (args.length == 2) {
             switch (args[0]) {
                 case "look":
-                    list = null;
-                    break;
+                    return null;
                 case "give":
                 case "take":
                 case "set":
                 case "reset":
                     if (sender.hasPermission("rankpoint.admin")) {
-                        list = null;
+                        return null;
                     }
-                    break;
                 default:
                     break;
             }
         }
-        return list;
+
+        if (args.length >= 2) {
+            return new ArrayList<>();
+        }
+
+        ArrayList<String> list = new ArrayList<>();
+        if (sender instanceof Player) {
+            list.add("me");
+        }
+        list.add("look");
+        if (sender.hasPermission("rankpoint.admin")) {
+            list.add("give");
+            list.add("giveall");
+            list.add("take");
+            list.add("set");
+            list.add("reset");
+            list.add("reload");
+            list.add("migrate");
+        }
+        if (args.length == 0 || args[0].isEmpty()) {
+            return list;
+        } else {
+            return list.stream().filter(str -> str.startsWith(args[0]))
+                .collect(Collectors.toList());
+        }
     }
 
     private boolean checkPlayerName(String name) {

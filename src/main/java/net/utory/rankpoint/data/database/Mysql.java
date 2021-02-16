@@ -59,4 +59,9 @@ public class Mysql implements Database {
         return conn.prepareStatement("INSERT INTO " + tableName
             + " (UUID, Point) VALUES (?, ?) ON DUPLICATE KEY UPDATE Point = ?");
     }
+
+    @Override
+    public String getTableName() {
+        return tableName;
+    }
 }
